@@ -1,9 +1,10 @@
 {
   "name": "cloud-koala",
-  "version": "0.1.0",
   "description": "Run Excel calculations in the cloud",
+  "repository": "Synergetic-Engineering/cloud-koala",
+  "version": "0.1.0",
   "author": "Synengco",
-  "license": "GNU GPLv3",
+  "license": "GPL-3.0",
   "dependencies": {},
   "devDependencies": {
     "serverless-python-requirements": "^3.0.10"
