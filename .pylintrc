@@ -1,0 +1,9 @@
+[MESSAGES CONTROL]
+# C0111 Missing docstring
+# W0613 Unused argument %r Used when a function or method argument is not used.
+disable=C0111,W0613
+
+[FORMAT]
+max-line-length=100
+max-module-lines=1000
+indent-string='    '
