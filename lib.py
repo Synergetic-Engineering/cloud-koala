@@ -1,5 +1,3 @@
-import json
-
 from openpyxl import load_workbook
 
 from koala.ExcelCompiler import ExcelCompiler
