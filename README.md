@@ -9,13 +9,13 @@ Cloud Koala packages [Koala](https://github.com/anthill/koala) (from [WeAreAnts]
 ## Proposed API
 
 * `https://.../models`
-    * GET - list of available calculations
-    * POST - upload an Excel model to compile it into a Koala serialized python object, responds with the model's ID
+    * `GET` - list of available calculations
+    * `POST` - upload an Excel model to compile it into a Koala serialized python object, responds with the model's ID
 * `https://.../models/{model_id}`
-    * GET - model info
-    * PUT - update model
-    * POST - upload model input data, responds with results from the model
-    * DELETE - remove model
+    * `GET` - model info
+    * `PUT` - update model
+    * `POST` - upload model input data, responds with results from the model
+    * `DELETE` - remove model
 
 ## Requirements
 
@@ -65,7 +65,9 @@ sls invoke local -f {function}
 
 ## Credit
 
-This has been developed based on the nifty python library [Koala](https://github.com/anthill/koala), developed by
+This project has been inspired by the nifty python library [Koala](https://github.com/anthill/koala) :koala: developed by [WeAreAnts](WeAreAnts) :ant:.
+
+Thanks also to the developers of the [Serverless Framework](http://www.serverless.com) and [lambci](https://github.com/lambci/lambci).
 
 ## Licence
 
