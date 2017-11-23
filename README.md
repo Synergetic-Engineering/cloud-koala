@@ -1,5 +1,5 @@
 # Cloud Koala
-*Run Excel calculations in the cloud :cloud::koala:*
+*Run Excel calculations in the cloud* :cloud::koala:
 
 [![LambCI Build Status](https://lambci-buildresults-x3wvacl759wh.s3-ap-southeast-2.amazonaws.com/gh/Synergetic-Engineering/cloud-koala/branches/master/26821f4cec821f75611edd3567f261a6.svg)](https://lambci-buildresults-x3wvacl759wh.s3-ap-southeast-2.amazonaws.com/gh/Synergetic-Engineering/cloud-koala/branches/master/371624d728e1605ae2aced95a05e3266.html)
 
