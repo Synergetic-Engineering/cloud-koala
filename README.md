@@ -65,7 +65,7 @@ sls invoke local -f {function}
 
 ## Credit
 
-This project has been inspired by the nifty python library [Koala](https://github.com/anthill/koala) :koala: developed by [WeAreAnts](http://weareants.fr/) :ant:.
+This project has been inspired by the nifty python library [Koala](https://github.com/anthill/koala) :koala: ([koala2](https://pypi.python.org/pypi/koala2) on pypi) developed by [WeAreAnts](http://weareants.fr/) :ant:.
 
 Thanks also to the developers of the [Serverless Framework](http://www.serverless.com) and [lambci](https://github.com/lambci/lambci).
 
