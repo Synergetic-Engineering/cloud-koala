@@ -27,9 +27,7 @@ def success(body, content_type='application/json', filename=None):
 
 
 def get_file_from_event(event):
-    # TODO work out how we want to expect the xlsx file to be included
-    # Should this serialize it?
-    print 'event', event
+    # TODO double check how we want to expect the xlsx file to be included
     file_name = event['body']['file_name']
     file_string = event['body']['file_string']
     return file_name, file_string

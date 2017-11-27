@@ -50,7 +50,6 @@ def get_model(model_id):
             'model_id': model_id,
         }
     )
-    print model_id, result.keys()
     return result['Item']
 
 
