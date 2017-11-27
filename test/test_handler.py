@@ -2,6 +2,10 @@
 # env variables
 import test.util
 
+import boto3
+from moto import mock_dynamodb2, mock_s3
+boto3.setup_default_session(aws_access_key_id='123', aws_secret_access_key='123', region_name='ap-southeast-2')
+
 import handler
 
 
@@ -28,12 +32,19 @@ def test_get_file_from_event():
     assert file_string == '123457'
 
 
+@mock_dynamodb2
 def test_get_models():
+    test.util.create_dynamodb_table()
     resp = handler.get_models(None, None)
     assert resp['statusCode'] == 200
+    print resp
 
 
+@mock_dynamodb2
+@mock_s3
 def test_add_model():
+    test.util.create_dynamodb_table()
+    test.util.create_s3_bucket()
     resp = handler.add_model({
         'body': {
             'file_name': 'abc.xlsx',
@@ -43,14 +54,22 @@ def test_add_model():
     assert resp['statusCode'] == 200
 
 
+@mock_dynamodb2
+@mock_s3
 def test_get_model():
-    resp = handler.add_model({
+    test.util.create_dynamodb_table()
+    test.util.create_s3_bucket()
+    resp = handler.get_model({
         'pathParameters': {'model_id': '123abc'},
         }, None)
     assert resp['statusCode'] == 200
 
 
+@mock_dynamodb2
+@mock_s3
 def test_update_model():
+    test.util.create_dynamodb_table()
+    test.util.create_s3_bucket()
     resp = handler.update_model({
         'pathParameters': {'model_id': '123abc'},
         'body': {
@@ -61,14 +80,22 @@ def test_update_model():
     assert resp['statusCode'] == 200
 
 
+@mock_dynamodb2
+@mock_s3
 def test_delete_model():
+    test.util.create_dynamodb_table()
+    test.util.create_s3_bucket()
     resp = handler.delete_model({
         'pathParameters': {'model_id': '123abc'},
         }, None)
     assert resp['statusCode'] == 200
 
 
+@mock_dynamodb2
+@mock_s3
 def test_run_model():
+    test.util.create_dynamodb_table()
+    test.util.create_s3_bucket()
     resp = handler.run_model({
         'pathParameters': {'model_id': '123abc'}, 'body': {},
         }, None)
