@@ -45,12 +45,13 @@ def test_get_models():
 def test_add_model():
     test.util.create_dynamodb_table()
     test.util.create_s3_bucket()
-    resp = handler.add_model({
-        'body': {
-            'file_name': 'abc.xlsx',
-            'file_string': '123457',
-        },
-        }, None)
+    with open('test/test.xlsx') as f:
+        resp = handler.add_model({
+            'body': {
+                'file_name': 'abc.xlsx',
+                'file_string': f.read(),
+            },
+            }, None)
     assert resp['statusCode'] == 200
 
 
@@ -100,3 +101,17 @@ def test_run_model():
         'pathParameters': {'model_id': '123abc'}, 'body': {},
         }, None)
     assert resp['statusCode'] == 200
+
+
+@mock_dynamodb2
+@mock_s3
+def test_compile_model():
+    test.util.create_dynamodb_table()
+    test.util.create_s3_bucket()
+    resp = handler.compile_model({
+        'Records': [{
+            'eventName': 'ObjectCreated:Put',
+            's3': {'object': {'key': 'excel_uploads/123abc'}},
+            }],
+        }, None)
+    print resp

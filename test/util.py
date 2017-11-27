@@ -49,9 +49,15 @@ def create_s3_bucket():
         pass
     s3 = boto3.resource('s3')
     bucket = s3.Bucket(os.environ['S3_BUCKET'])
-    with open('test/test.gzip') as f:
+    with open('test/test.xlsx', 'r') as f:
+        bucket.put_object(
+            Bucket=os.environ['S3_BUCKET'],
+            Key='excel_uploads/123abc',
+            Body=f.read(),
+        )
+    with open('test/test.gzip', 'r') as f:
         bucket.put_object(
             Bucket=os.environ['S3_BUCKET'],
             Key='compiled_models/123abc',
-            Body=f,
+            Body=f.read(),
         )

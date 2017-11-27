@@ -125,8 +125,8 @@ def compile_model(event, context):
       - `model_id` (required)
     Returns: Status of compilation
     """
-    # TODO get excel_file_string and model_id from event
-    print event
-    model_id = event.get('???', 'abc123')
-    excel_file_string = event.get('???', 'excel_file')
-    lib.compile_model(model_id, excel_file_string)
+    # TODO check how many records there might be (always only 1 or will it collect them?)
+    for record in event['Records']:
+        if record['eventName'] == 'ObjectCreated:Put':
+            model_id = record['s3']['object']['key'].replace('excel_uploads/', '')
+            lib.compile_model(model_id)
