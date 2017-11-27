@@ -79,9 +79,11 @@ functions:
 
 package:
     exclude:
+        - .tox/**
+        - .vscode/**
         - env/**
         - tests/**
-        - .tox/**
+        - test/**
 
 resources:
   Resources:
