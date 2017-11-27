@@ -71,4 +71,4 @@ Thanks also to the developers of the [Serverless Framework](http://www.serverles
 
 ## Licence
 
-GNU GPLv3
+GPL-3.0
