@@ -1,3 +1,7 @@
+# XXX this needs to happen before importing other stuff to set
+# env variables
+import test.util
+
 import handler
 
 
@@ -13,8 +17,15 @@ def test_success():
     assert resp['statusCode'] == 200
 
 
-def test_get_xlsx_file_from_event():
-    xlsx_file = handler.get_xlsx_file_from_event({})
+def test_get_file_from_event():
+    file_name, file_string = handler.get_file_from_event({
+        'body': {
+            'file_name': 'abc.xlsx',
+            'file_string': '123457',
+        },
+    })
+    assert file_name == 'abc.xlsx'
+    assert file_string == '123457'
 
 
 def test_get_models():
@@ -23,25 +34,42 @@ def test_get_models():
 
 
 def test_add_model():
-    resp = handler.add_model({'body': {}}, None)
+    resp = handler.add_model({
+        'body': {
+            'file_name': 'abc.xlsx',
+            'file_string': '123457',
+        },
+        }, None)
     assert resp['statusCode'] == 200
 
 
 def test_get_model():
-    resp = handler.add_model({'pathParameters': {'model_id': '123abc'}}, None)
+    resp = handler.add_model({
+        'pathParameters': {'model_id': '123abc'},
+        }, None)
     assert resp['statusCode'] == 200
 
 
 def test_update_model():
-    resp = handler.update_model({'pathParameters': {'model_id': '123abc'}, 'body': {}}, None)
+    resp = handler.update_model({
+        'pathParameters': {'model_id': '123abc'},
+        'body': {
+            'file_name': 'abc.xlsx',
+            'file_string': '123457',
+        },
+        }, None)
     assert resp['statusCode'] == 200
 
 
 def test_delete_model():
-    resp = handler.delete_model({'pathParameters': {'model_id': '123abc'}}, None)
+    resp = handler.delete_model({
+        'pathParameters': {'model_id': '123abc'},
+        }, None)
     assert resp['statusCode'] == 200
 
 
 def test_run_model():
-    resp = handler.run_model({'pathParameters': {'model_id': '123abc'}, 'body': {}}, None)
+    resp = handler.run_model({
+        'pathParameters': {'model_id': '123abc'}, 'body': {},
+        }, None)
     assert resp['statusCode'] == 200

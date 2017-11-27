@@ -1,3 +1,7 @@
+# XXX this needs to happen before importing other stuff to set
+# env variables
+import test.util
+
 import lib
 
 
@@ -6,8 +10,8 @@ def test_list_models():
 
 
 def test_add_or_update_model():
-    lib.add_or_update_model('')
-    lib.add_or_update_model('', model_id='123abc')
+    lib.add_or_update_model('file_name', 'file_string')
+    lib.add_or_update_model('file_name', 'file_string', model_id='123abc')
 
 
 def test_get_model():

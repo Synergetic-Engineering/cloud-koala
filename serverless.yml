@@ -11,13 +11,19 @@ provider:
   region: ap-southeast-2
   memorySize: 512
   timeout: 60
-  stage: dev
+  stage: ${opt:stage, 'dev'}
+  environment:
+    DYNAMODB_TABLE: ${self:custom.table_name}
+    S3_BUCKET: ${self:custom.bucket_name}
 
 custom:
   pythonRequirements:
     dockerizePip: true
+  table_name: ${self:service}-${self:provider.stage}-models
+  bucket_name: ${self:service}-${self:provider.stage}-models
 
 functions:
+  # API functions
   get_models:
     handler: handler.get_models
     events:
@@ -61,7 +67,53 @@ functions:
           method: delete
           cors: true
 
+  # Back-end functions
+  compile_model:
+    handler: handler.compile_model
+    events:
+      - s3:
+        bucket: ${self:custom.bucket_name}
+        rules:
+          - prefix: excel_uploads/
+
 package:
     exclude:
         - env/**
         - tests/**
+        - .tox/**
+
+resources:
+  Resources:
+    # DynamoDB resources
+    DynamoDbTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:custom.table_name}
+        AttributeDefinitions:
+          - AttributeName: model_id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: model_id
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+    DynamoDBIamPolicy:
+      Type: AWS::IAM::Policy
+      DependsOn: DynamoDbTable
+      Properties:
+        PolicyName: lambda-dynamodb
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action:
+                - dynamodb:Query
+                - dynamodb:Scan
+                - dynamodb:GetItem
+                - dynamodb:PutItem
+                - dynamodb:UpdateItem
+                - dynamodb:DeleteItem
+              Resource: arn:aws:dynamodb:*:*:table/${self:custom.table_name}
+        Roles:
+          - Ref: IamRoleLambdaExecution
