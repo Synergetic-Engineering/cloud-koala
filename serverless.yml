@@ -19,6 +19,7 @@ provider:
 custom:
   pythonRequirements:
     dockerizePip: true
+    zip: true
   table_name: ${self:service}-${self:provider.stage}-models
   bucket_name: ${self:service}-${self:provider.stage}-models
 
