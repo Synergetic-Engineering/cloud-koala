@@ -72,9 +72,9 @@ functions:
     handler: handler.compile_model
     events:
       - s3:
-        bucket: ${self:custom.bucket_name}
-        rules:
-          - prefix: excel_uploads/
+          bucket: ${self:custom.bucket_name}
+          rules:
+            - prefix: excel_uploads/
 
 package:
     exclude:
