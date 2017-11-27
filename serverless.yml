@@ -15,6 +15,25 @@ provider:
   environment:
     DYNAMODB_TABLE: ${self:custom.table_name}
     S3_BUCKET: ${self:custom.bucket_name}
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:DescribeTable
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource: arn:aws:dynamodb:*:*:table/${self:custom.table_name}
+    - Effect: "Allow"
+      Action:
+        - "s3:*"
+      Resource: arn:aws:s3:::${self:custom.bucket_name}/excel_uploads/*
+    - Effect: "Allow"
+      Action:
+        - "s3:*"
+      Resource: arn:aws:s3:::${self:custom.bucket_name}/compiled_models/*
 
 custom:
   pythonRequirements:
@@ -87,7 +106,6 @@ package:
 
 resources:
   Resources:
-    # DynamoDB resources
     DynamoDbTable:
       Type: AWS::DynamoDB::Table
       Properties:
@@ -101,22 +119,3 @@ resources:
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
-    DynamoDBIamPolicy:
-      Type: AWS::IAM::Policy
-      DependsOn: DynamoDbTable
-      Properties:
-        PolicyName: lambda-dynamodb
-        PolicyDocument:
-          Version: '2012-10-17'
-          Statement:
-            - Effect: Allow
-              Action:
-                - dynamodb:Query
-                - dynamodb:Scan
-                - dynamodb:GetItem
-                - dynamodb:PutItem
-                - dynamodb:UpdateItem
-                - dynamodb:DeleteItem
-              Resource: arn:aws:dynamodb:*:*:table/${self:custom.table_name}
-        Roles:
-          - Ref: IamRoleLambdaExecution
