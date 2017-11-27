@@ -82,7 +82,9 @@ def run_model(model_id, payload):
     # XXX HACK Workaround needed for koala spreadsheet loading API
     # - need to write the file to a temp location for koala to read it...
     # - FIX = koala.Spreadsheet / koala.serialize should be updated to take the file contents in directly
-    dummy_file_name = './temp_{}'.format(model_id)
+    if not os.path.exists('/tmp'):
+        os.mkdir('/tmp')
+    dummy_file_name = '/tmp/temp_{}.gzip'.format(model_id)
     with open(dummy_file_name, 'wb') as fp:
         fp.write(compliled_string)
     sp = Spreadsheet.load(dummy_file_name)
@@ -90,20 +92,25 @@ def run_model(model_id, payload):
     results = {}
     # Cleanup previous workaround
     os.remove(dummy_file_name)
+    if not os.listdir('/tmp'):
+        os.rmdir('/tmp')
     return results
 
 
-def compile_model(model_id, excel_file_string):
+def compile_model(model_id):
+    compliled_string = bucket.Object('excel_uploads/{}'.format(model_id)).get()['Body'].read()
     # XXX HACK Workaround needed for koala spreadsheet loading API
     # - need to write the file to a temp location for koala to read it...
     # - then need to write koala compiled file from a temp location...
     # - FIX = koala.Spreadsheet / koala.serialize should be updated to take the file contents in directly
-    dummy_excel_file_name = './temp_excel_file_{}'.format(model_id)
-    dummy_compiled_file_name = './temp_compiled_file_{}'.format(model_id)
+    if not os.path.exists('/tmp'): # mainly required for dev / test environment
+        os.mkdir('/tmp')
+    dummy_excel_file_name = '/tmp/temp_excel_file_{}.xlsx'.format(model_id)
     with open(dummy_excel_file_name, 'wb') as fp:
-        fp.write(excel_file_string)
+        fp.write(compliled_string)
     compiler = ExcelCompiler(dummy_excel_file_name)
     sp = compiler.gen_graph()
+    dummy_compiled_file_name = '/tmp/temp_compiled_file_{}.gzip'.format(model_id)
     sp.dump(dummy_compiled_file_name)
     with open(dummy_compiled_file_name, 'r') as fp:
         compiled_file_string = fp.read()
@@ -116,3 +123,6 @@ def compile_model(model_id, excel_file_string):
     # Cleanup previous workaround
     os.remove(dummy_excel_file_name)
     os.remove(dummy_compiled_file_name)
+    if not os.listdir('/tmp'):
+        os.rmdir('/tmp')
+    return 'model {} compiled successfully'.format(model_id)

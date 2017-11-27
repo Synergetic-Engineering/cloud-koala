@@ -22,8 +22,10 @@ def test_list_models():
 def test_add_or_update_model():
     test.util.create_dynamodb_table()
     test.util.create_s3_bucket()
-    lib.add_or_update_model('file_name', 'file_string')
-    lib.add_or_update_model('file_name', 'file_string', model_id='123abc')
+    with open('test/test.xlsx', 'r') as f:
+        file_string = f.read()
+    lib.add_or_update_model('file_name', file_string)
+    lib.add_or_update_model('file_name', file_string, model_id='123abc')
 
 
 @mock_dynamodb2
@@ -48,3 +50,11 @@ def test_run_model():
     test.util.create_dynamodb_table()
     test.util.create_s3_bucket()
     lib.run_model('123abc', {})
+
+
+@mock_dynamodb2
+@mock_s3
+def test_compile_model():
+    test.util.create_dynamodb_table()
+    test.util.create_s3_bucket()
+    lib.compile_model('123abc')
