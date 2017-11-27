@@ -115,3 +115,5 @@ node_modules/
 
 # temporary excel files
 ~$**.xlsx
+
+.requirements.zip
