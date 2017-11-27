@@ -4,7 +4,7 @@ import test.util
 
 import boto3
 from moto import mock_dynamodb2, mock_s3
-boto3.setup_default_session(region_name='ap-southeast-2')
+boto3.setup_default_session(aws_access_key_id='123', aws_secret_access_key='123', region_name='ap-southeast-2')
 
 import handler
 
