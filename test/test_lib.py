@@ -2,10 +2,9 @@
 # env variables
 import test.util
 
-import os
-
 import boto3
 from moto import mock_dynamodb2, mock_s3
+boto3.setup_default_session(region_name='ap-southeast-2')
 
 import lib
 
