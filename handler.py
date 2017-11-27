@@ -126,7 +126,10 @@ def compile_model(event, context):
     Returns: Status of compilation
     """
     # TODO check how many records there might be (always only 1 or will it collect them?)
+    responses = []
     for record in event['Records']:
         if record['eventName'] == 'ObjectCreated:Put':
             model_id = record['s3']['object']['key'].replace('excel_uploads/', '')
-            lib.compile_model(model_id)
+            resp = lib.compile_model(model_id)
+            responses.append(resp)
+    return responses
