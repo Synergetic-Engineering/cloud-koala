@@ -51,7 +51,7 @@ def test_add_model():
         resp = handler.add_model({
             'body': {
                 'file_name': 'abc.xlsx',
-                'file_string': f.read(),
+                'file_string': base64.b64encode(f.read()),
             },
             }, None)
     assert resp['statusCode'] == 200
@@ -73,13 +73,14 @@ def test_get_model():
 def test_update_model():
     test.util.create_dynamodb_table()
     test.util.create_s3_bucket()
-    resp = handler.update_model({
-        'pathParameters': {'model_id': '123abc'},
-        'body': {
-            'file_name': 'abc.xlsx',
-            'file_string': '123457',
-        },
-        }, None)
+    with open('test/test.xlsx') as f:
+        resp = handler.update_model({
+            'pathParameters': {'model_id': '123abc'},
+            'body': {
+                'file_name': 'abc.xlsx',
+                'file_string': base64.b64encode(f.read()),
+            },
+            }, None)
     assert resp['statusCode'] == 200
 
 
