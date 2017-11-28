@@ -1,4 +1,5 @@
 import os
+import time
 import uuid
 
 import boto3
@@ -8,8 +9,6 @@ from openpyxl import load_workbook
 from koala.ExcelCompiler import ExcelCompiler
 from koala.Spreadsheet import Spreadsheet
 from koala.ExcelError import ExcelError
-
-import time
 
 
 # XXX is having these up at the module level like this best practice?
