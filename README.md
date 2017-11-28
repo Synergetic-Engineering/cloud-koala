@@ -69,32 +69,32 @@ Mock events for `sls invoke` are in `test/mock_events`
 
 To test a deployment, first add a model:
 ```bash
-sls invoke --stage=dev --function=add_model --path=test/mock_events/add_model.json
+sls invoke --stage=dev --function=add_model --path=test/mock_events/add_model.1.json
 ```
 
 Next, update a model with a known `model_id`:
 ```bash
-sls invoke --stage=dev --function=update_model --path=test/mock_events/update_model.json
+sls invoke --stage=dev --function=update_model --path=test/mock_events/update_model.2.json
 ```
 
 Next, get all models:
 ```bash
-sls invoke --stage=dev --function=get_models
+sls invoke --stage=dev --function=get_models --path=test/mock_events/get_models.3.json
 ```
 
 Get specific model:
 ```bash
-sls invoke --stage=dev --function=get_model --path=test/mock_events/get_model.json
+sls invoke --stage=dev --function=get_model --path=test/mock_events/get_model.4.json
 ```
 
 Run model:
 ```bash
-sls invoke --stage=dev --function=run_model --path=test/mock_events/run_model.json
+sls invoke --stage=dev --function=run_model --path=test/mock_events/run_model.5.json
 ```
 
 Finally, delete model:
 ```bash
-sls invoke --stage=dev --function=delete_model --path=test/mock_events/delete_model.json
+sls invoke --stage=dev --function=delete_model --path=test/mock_events/delete_model.6.json
 ```
 
 (The model create using `add_model` will not be deleted in this process)
