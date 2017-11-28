@@ -9,6 +9,8 @@ from koala.ExcelCompiler import ExcelCompiler
 from koala.Spreadsheet import Spreadsheet
 from koala.ExcelError import ExcelError
 
+import time
+
 
 # XXX is having these up at the module level like this best practice?
 # - also worth considering how we will mock them for testing
@@ -30,13 +32,20 @@ def add_or_update_model(file_name, file_string, model_id=None):
     """
     Serialise the xlsx_file and upload to S3, return the ID
     """
-    model_id = model_id or uuid.uuid4().hex
-    bucket.put_object(Key='excel_uploads/{}'.format(model_id), Body=file_string)
-    table.put_item(Item={
-        'model_id': model_id,
-        'file_name': file_name,
-    })
-    return model_id
+    key = {'model_id': model_id or uuid.uuid4().hex}
+    if model_id is not None:
+        item_record = table.get_item(Key=key).get('Item', {})
+    if model_id is None or not item_record:
+        item_record = {
+            'model_id': key['model_id'],
+            'created_at': str(int(time.time())),
+            'version': str(0),
+        }
+    item_record['file_name'] = file_name
+    item_record['version'] = str(int(item_record['version'])+1)
+    item_record['updated_at'] = str(int(time.time()))
+    table.put_item(Item=item_record)
+    bucket.put_object(Key='excel_uploads/{}'.format(item_record['model_id']), Body=file_string)
 
 
 def get_model(model_id):
