@@ -1,0 +1,9 @@
+{
+    "pathParameters": {
+        "model_id": "test_id"
+    },
+    "body": {
+        "file_name": "test.xlsx",
+        "file_string": ""
+    }
+}

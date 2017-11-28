@@ -49,7 +49,7 @@ source env/bin/activate
 pip install -r requirements
 ```
 
-## Testing
+## Testing locally
 
 Tox is used for unit testing and continuous integration, install it via `pip install tox` and run the unit tests using
 
@@ -62,6 +62,43 @@ To run a single function, `sls invoke local` command can be used (ensure the vir
 ```bash
 sls invoke local -f {function}
 ```
+
+## Testing the deployment
+
+Mock events for `sls invoke` are in `test/mock_events`
+
+To test a deployment, first add a model:
+```bash
+sls invoke --stage=dev --function=add_model --path=test/mock_events/add_model.json
+```
+
+Next, update a model with a known `model_id`:
+```bash
+sls invoke --stage=dev --function=update_model --path=test/mock_events/update_model.json
+```
+
+Next, get all models:
+```bash
+sls invoke --stage=dev --function=get_models
+```
+
+Get specific model:
+```bash
+sls invoke --stage=dev --function=get_model --path=test/mock_events/get_model.json
+```
+
+Run model:
+```bash
+sls invoke --stage=dev --function=run_model --path=test/mock_events/run_model.json
+```
+
+Finally, delete model:
+```bash
+sls invoke --stage=dev --function=delete_model --path=test/mock_events/delete_model.json
+```
+
+(The model create using `add_model` will not be deleted in this process)
+
 
 ## Credit
 
