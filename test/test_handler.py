@@ -6,6 +6,8 @@ import boto3
 from moto import mock_dynamodb2, mock_s3
 boto3.setup_default_session(aws_access_key_id='123', aws_secret_access_key='123', region_name='ap-southeast-2')
 
+import base64
+
 import handler
 
 
@@ -25,7 +27,7 @@ def test_get_file_from_event():
     file_name, file_string = handler.get_file_from_event({
         'body': {
             'file_name': 'abc.xlsx',
-            'file_string': '123457',
+            'file_string': base64.b64encode('123457'),
         },
     })
     assert file_name == 'abc.xlsx'
