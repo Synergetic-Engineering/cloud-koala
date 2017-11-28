@@ -16,7 +16,7 @@ dynamodb = boto3.resource('dynamodb')
 table = dynamodb.Table(os.environ['DYNAMODB_TABLE'])
 s3 = boto3.resource('s3')
 bucket = s3.Bucket(os.environ['S3_BUCKET'])
-s3_client = boto3.client('s3')
+
 
 def list_models():
     """
@@ -57,21 +57,20 @@ def delete_model(model_id):
     """
     Delete the model record from S3 and either archive or delete related files in S3
     """
-
-    result = table.delete_item(
+    table.delete_item(
         Key={
             'model_id': model_id,
         }
     )
+    # Archive Objects
     try:
-        # Archive Objects
         bucket.put_object(
             Body=bucket.Object('excel_uploads/{}'.format(model_id)).get()['Body'].read(),
             Key='excel_uploads_archive/{}'.format(model_id),
         )
     except:
-       pass
-    try:    
+        pass
+    try:
         bucket.put_object(
             Body=bucket.Object('compiled_models/{}'.format(model_id)).get()['Body'].read(),
             Key='compiled_models_archive/{}'.format(model_id),
