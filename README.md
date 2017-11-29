@@ -72,32 +72,47 @@ To test a deployment, first add a model:
 sls invoke --stage=dev --function=add_model --path=test/mock_events/add_model.1.json
 ```
 
+Check that the model has been added and compiled:
+```bash
+sls invoke --stage=dev --function=get_models --path=test/mock_events/get_models.3.json
+```
+
+Add model with invalid model:
+```bash
+sls invoke --stage=dev --function=add_model --path=test/mock_events/add_model.1a.json
+```
+
+Check that the model has been added and not compiled:
+```bash
+sls invoke --stage=dev --function=get_models --path=test/mock_events/get_models.3.json
+```
+
 Next, update a model with a known `model_id`:
 ```bash
 sls invoke --stage=dev --function=update_model --path=test/mock_events/update_model.2.json
 ```
 
-Next, get all models:
+Get all models and check that both models have been created:
 ```bash
 sls invoke --stage=dev --function=get_models --path=test/mock_events/get_models.3.json
 ```
 
-Get specific model:
+Get specific model with known `model_id`:
 ```bash
 sls invoke --stage=dev --function=get_model --path=test/mock_events/get_model.4.json
 ```
 
-Run model:
+Run model with known `model_id`:
 ```bash
 sls invoke --stage=dev --function=run_model --path=test/mock_events/run_model.5.json
 ```
 
-Finally, delete model:
+Finally, delete model with known `model_id`:
 ```bash
 sls invoke --stage=dev --function=delete_model --path=test/mock_events/delete_model.6.json
 ```
 
-(The model create using `add_model` will not be deleted in this process)
+(The models created using `add_model` will not be deleted in this process)
 
 
 ## Credit
