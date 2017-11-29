@@ -18,6 +18,14 @@ table = dynamodb.Table(os.environ['DYNAMODB_TABLE'])
 s3 = boto3.resource('s3')
 bucket = s3.Bucket(os.environ['S3_BUCKET'])
 
+def _update_bucket_parameter(model_id, param_name, content):
+    table.update_item(
+        Key={'model_id': model_id},
+        UpdateExpression='SET #name = :value',
+        ExpressionAttributeNames={"#name":param_name},
+        ExpressionAttributeValues={":value":content}
+    )
+
 
 def list_models():
     """
@@ -39,7 +47,7 @@ def add_or_update_model(file_name, file_string, model_id=None):
             'model_id': key['model_id'],
             'created_at': str(int(time.time())),
             'version': str(0),
-            'compiled':False,
+            'compilation_status':'Waiting',
         }
     item_record['file_name'] = file_name
     item_record['version'] = str(int(item_record['version'])+1)
@@ -111,6 +119,13 @@ def run_model(model_id, payload):
       - Get the required outputs from the model
       - Build and return response
     """
+    # see if compiled model compiled
+    comp_stat=""
+    for each in table.scan()['Items']:
+        if each['model_id']==model_id:
+            comp_stat = each['compilation_status']
+    if comp_stat!="Compiled":
+        return 'Model Not Compiled'
     compliled_string = bucket.Object('compiled_models/{}'.format(model_id)).get()['Body'].read()
     # XXX HACK Workaround needed for koala spreadsheet loading API
     # - need to write the file to a temp location for koala to read it...
@@ -132,6 +147,7 @@ def run_model(model_id, payload):
 
 def compile_model(model_id):
     compliled_string = bucket.Object('excel_uploads/{}'.format(model_id)).get()['Body'].read()
+    _update_bucket_parameter(model_id, "compilation_status", "Compiling")
     # XXX HACK Workaround needed for koala spreadsheet loading API
     # - need to write the file to a temp location for koala to read it...
     # - then need to write koala compiled file from a temp location...
@@ -141,29 +157,35 @@ def compile_model(model_id):
     dummy_excel_file_name = '/tmp/temp_excel_file_{}.xlsx'.format(model_id)
     with open(dummy_excel_file_name, 'wb') as fp:
         fp.write(compliled_string)
-    compiler = ExcelCompiler(dummy_excel_file_name)
-    sp = compiler.gen_graph()
-    dummy_compiled_file_name = '/tmp/temp_compiled_file_{}.gzip'.format(model_id)
-    sp.dump(dummy_compiled_file_name)
-    with open(dummy_compiled_file_name, 'r') as fp:
-        compiled_file_string = fp.read()
-    # Write compiled file to S3 and update dynamodb record
-    bucket.put_object(Key='compiled_models/{}'.format(model_id), Body=compiled_file_string)
-    table.update_item(
-        Key={
-            'model_id': model_id
-        },
-        UpdateExpression='SET #name = :value',
-        ExpressionAttributeNames={
-            "#name":"compiled"
-        },
-        ExpressionAttributeValues={
-            ":value":True
-        }
-    )
-    # Cleanup previous workaround
-    os.remove(dummy_excel_file_name)
-    os.remove(dummy_compiled_file_name)
-    if not os.listdir('/tmp'):
-        os.rmdir('/tmp')
-    return 'model {} compiled successfully'.format(model_id)
+    try:
+        compiler = ExcelCompiler(dummy_excel_file_name)
+        sp = compiler.gen_graph()
+    except IOError as er:
+        print er
+        _update_bucket_parameter(model_id, "compilation_status", "Failed (Invalid Excel File)")
+        return_str = 'model {} did not compile'.format(model_id)
+    except Exception as er:
+        if str(er)=='File is not a zip file':
+            _update_bucket_parameter(model_id, "compilation_status", "Failed (Invalid File Type)")
+            print er
+        else:
+            _update_bucket_parameter(model_id, "compilation_status", "Failed (Generic Error)")
+            print er
+        return_str = 'model {} did not compile'.format(model_id)
+    else:
+        dummy_compiled_file_name = '/tmp/temp_compiled_file_{}.gzip'.format(model_id)
+        sp.dump(dummy_compiled_file_name)
+        with open(dummy_compiled_file_name, 'r') as fp:
+            compiled_file_string = fp.read()
+        # Write compiled file to S3 and update dynamodb record
+        bucket.put_object(Key='compiled_models/{}'.format(model_id), Body=compiled_file_string)
+        _update_bucket_parameter(model_id, "compilation_status", "Compiled")
+        # Cleanup previous workaround
+        os.remove(dummy_compiled_file_name)
+        return_str = 'model {} compiled'.format(model_id)
+    finally:
+        # Cleanup previous workaround
+        os.remove(dummy_excel_file_name)
+        if not os.listdir('/tmp'):
+            os.rmdir('/tmp')
+        return return_str

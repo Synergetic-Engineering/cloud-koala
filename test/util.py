@@ -40,6 +40,13 @@ def create_dynamodb_table():
         'model_id': '123abc',
         'file_name': 'file_name.xlsx',
         'version': '1',
+        'compilation_status':'Compiled'
+    })
+    table.put_item(Item={
+        'model_id': '456def',
+        'file_name': 'file_name.xlsx',
+        'version': '1',
+        'compilation_status':'Waiting'
     })
 
 def create_s3_bucket():
@@ -51,10 +58,16 @@ def create_s3_bucket():
     s3 = boto3.resource('s3')
     bucket = s3.Bucket(os.environ['S3_BUCKET'])
     with open('test/test.xlsx', 'r') as f:
+        file_string = f.read()
         bucket.put_object(
             Bucket=os.environ['S3_BUCKET'],
             Key='excel_uploads/123abc',
-            Body=f.read(),
+            Body=file_string,
+        )
+        bucket.put_object(
+            Bucket=os.environ['S3_BUCKET'],
+            Key='excel_uploads/456def',
+            Body=file_string,
         )
     with open('test/test.gzip', 'r') as f:
         bucket.put_object(
