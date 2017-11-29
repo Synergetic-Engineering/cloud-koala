@@ -63,12 +63,8 @@ def get_model(model_id):
     e.g. inputs, outputs
     maybe allow for optional level of detail to this?
     """
-    result = table.get_item(
-        Key={
-            'model_id': model_id,
-        }
-    )
-    return result['Item']
+    result = table.get_item(Key={'model_id': model_id})
+    return result.get('Item')
 
 
 def delete_model(model_id):
