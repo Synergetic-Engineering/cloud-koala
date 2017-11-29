@@ -127,13 +127,17 @@ def compile_model(model_id):
     # Write compiled file to S3 and update dynamodb record
     bucket.put_object(Key='compiled_models/{}'.format(model_id), Body=compiled_file_string)
     table.update_item(
-        Key={'model_id': model_id},
-        AttributeUpdates={
-            'compiled': {
-                'Value': True,
-                'Action': 'PUT',
-            }
-    })
+        Key={
+            'model_id': model_id
+        },
+        UpdateExpression='SET #name = :value',
+        ExpressionAttributeNames={
+            "#name":"compiled"
+        },
+        ExpressionAttributeValues={
+            ":value":True
+        }
+    )
     # Cleanup previous workaround
     os.remove(dummy_excel_file_name)
     os.remove(dummy_compiled_file_name)
