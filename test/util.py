@@ -39,6 +39,7 @@ def create_dynamodb_table():
     table.put_item(Item={
         'model_id': '123abc',
         'file_name': 'file_name.xlsx',
+        'version': '1',
     })
 
 def create_s3_bucket():
