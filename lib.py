@@ -81,20 +81,16 @@ def delete_model(model_id):
         }
     )
     # Archive Objects
-    try:
+    if 'excel_uploads/{}'.format(model_id) in list_models():
         bucket.put_object(
             Body=bucket.Object('excel_uploads/{}'.format(model_id)).get()['Body'].read(),
             Key='excel_uploads_archive/{}'.format(model_id),
         )
-    except:
-        pass
-    try:
+    if 'compiled_models/{}'.format(model_id) in list_models():
         bucket.put_object(
             Body=bucket.Object('compiled_models/{}'.format(model_id)).get()['Body'].read(),
             Key='compiled_models_archive/{}'.format(model_id),
         )
-    except:
-        pass
     # Delete Objects
     bucket.delete_objects(Delete={
         'Objects': [
