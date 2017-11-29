@@ -86,7 +86,19 @@ def test_get_model():
 def test_delete_model():
     test.util.create_dynamodb_table()
     test.util.create_s3_bucket()
-    lib.delete_model('123abc') 
+    lib.delete_model('123abc')
+    # check out of dynamodb table
+    assert '123abc' not in _get_table_model_ids()
+    # S3 Bucket Checks
+    # check out of excel_uploads
+    assert 'excel_uploads/123abc' not in _get_bucket_model_ids()
+    # check in excel_uploads_archive
+    assert 'excel_uploads_archive/123abc' in _get_bucket_model_ids()
+    # check out of compiled_models
+    assert 'compiled_models/123abc' not in _get_bucket_model_ids()
+    # check in excel_uploads_archive
+    assert 'compiled_models_archive/123abc' in _get_bucket_model_ids()
+
 
 
 @mock_dynamodb2
