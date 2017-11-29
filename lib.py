@@ -119,6 +119,13 @@ def run_model(model_id, payload):
       - Get the required outputs from the model
       - Build and return response
     """
+    # see if compiled model compiled
+    comp_stat=""
+    for each in table.scan()['Items']:
+        if each['model_id']==model_id:
+            comp_stat = each['compilation_status']
+    if comp_stat!="Compiled":
+        return 'Model Not Compiled'
     compliled_string = bucket.Object('compiled_models/{}'.format(model_id)).get()['Body'].read()
     # XXX HACK Workaround needed for koala spreadsheet loading API
     # - need to write the file to a temp location for koala to read it...
