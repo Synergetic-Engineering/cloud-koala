@@ -6,7 +6,7 @@
 
 Cloud Koala packages [Koala](https://github.com/anthill/koala) (from [WeAreAnts](http://weareants.fr/)) within a [Serverless Framework](http://www.serverless.com) environment to deploy a AWS API Gateway REST API for converting Excel workbooks into python objects that can be run on AWS Lambda and serialized & stored on AWS S3 for on the fly calculation of the workbooks without the need for Excel.
 
-## Proposed API
+## API
 
 * `https://.../models`
     * `GET` - list of available calculations
