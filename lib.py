@@ -131,6 +131,7 @@ def compile_model(model_id):
         AttributeUpdates={
             'compiled': {
                 'Value': True,
+                'Action': 'PUT',
             }
     })
     # Cleanup previous workaround
