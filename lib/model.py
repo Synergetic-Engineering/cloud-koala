@@ -42,6 +42,10 @@ def _move_bucket_object(start_folder, end_folder, model_id):
     except botocore.exceptions.ClientError as err:
         if err.response['Error']['Code'] == "404":
             status = "404"
+    #TODO Add Exception Handling for specific server not found
+    # except Exception as err:
+    #     if err:
+    #         status = "404"
         else:
             status = "Error"
     finally:
@@ -143,6 +147,7 @@ def compile_model(model_id):
     # - need to write the file to a temp location for koala to read it...
     # - then need to write koala compiled file from a temp location...
     # - FIX = koala.Spreadsheet / koala.serialize should be updated to take the file contents in directly
+    return_str = ''
     if not os.path.exists('/tmp'): # mainly required for dev / test environment
         os.mkdir('/tmp')
     dummy_excel_file_name = '/tmp/temp_excel_file_{}.xlsx'.format(model_id)
@@ -151,22 +156,22 @@ def compile_model(model_id):
     try:
         compiler = ExcelCompiler(dummy_excel_file_name)
         sp = compiler.gen_graph()
-    except IOError as er:
-        print er
+    except IOError as err:
+        print err
         _update_bucket_parameter(model_id, "compilation_status", "Failed (Invalid Excel File)")
         return_str = 'model {} did not compile'.format(model_id)
-    except Exception as er:
-        if str(er)=='File is not a zip file':
+    except Exception as err:
+        if str(err)=='File is not a zip file':
             _update_bucket_parameter(model_id, "compilation_status", "Failed (Invalid File Type)")
-            print er
+            print err
         else:
             _update_bucket_parameter(model_id, "compilation_status", "Failed (Generic Error)")
-            print er
+            print err
         return_str = 'model {} did not compile'.format(model_id)
     else:
         dummy_compiled_file_name = '/tmp/temp_compiled_file_{}.gzip'.format(model_id)
         sp.dump(dummy_compiled_file_name)
-        with open(dummy_compiled_file_name, 'r') as fp:
+        with open(dummy_compiled_file_name, 'rb') as fp:
             compiled_file_string = fp.read()
         # Write compiled file to S3 and update dynamodb record
         bucket.put_object(Key='compiled_models/{}'.format(model_id), Body=compiled_file_string)
