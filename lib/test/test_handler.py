@@ -1,6 +1,6 @@
 # XXX this needs to happen before importing other stuff to set
 # env variables
-import test.util
+from lib.test import util
 
 import boto3
 from moto import mock_dynamodb2, mock_s3
@@ -36,7 +36,7 @@ def test_get_file_from_event():
 
 @mock_dynamodb2
 def test_get_models():
-    test.util.create_dynamodb_table()
+    util.create_dynamodb_table()
     resp = lib.handler.get_models(None, None)
     assert resp['statusCode'] == 200
     print resp
@@ -45,9 +45,9 @@ def test_get_models():
 @mock_dynamodb2
 @mock_s3
 def test_add_model():
-    test.util.create_dynamodb_table()
-    test.util.create_s3_bucket()
-    with open('test/test.xlsx') as f:
+    util.create_dynamodb_table()
+    util.create_s3_bucket()
+    with open('lib/test/test.xlsx') as f:
         resp = lib.handler.add_model({
             'body': {
                 'file_name': 'abc.xlsx',
@@ -60,8 +60,8 @@ def test_add_model():
 @mock_dynamodb2
 @mock_s3
 def test_get_model():
-    test.util.create_dynamodb_table()
-    test.util.create_s3_bucket()
+    util.create_dynamodb_table()
+    util.create_s3_bucket()
     resp = lib.handler.get_model({
         'pathParameters': {'model_id': '123abc'},
         }, None)
@@ -71,9 +71,9 @@ def test_get_model():
 @mock_dynamodb2
 @mock_s3
 def test_update_model():
-    test.util.create_dynamodb_table()
-    test.util.create_s3_bucket()
-    with open('test/test.xlsx') as f:
+    util.create_dynamodb_table()
+    util.create_s3_bucket()
+    with open('lib/test/test.xlsx') as f:
         resp = lib.handler.update_model({
             'pathParameters': {'model_id': '123abc'},
             'body': {
@@ -87,8 +87,8 @@ def test_update_model():
 @mock_dynamodb2
 @mock_s3
 def test_delete_model():
-    test.util.create_dynamodb_table()
-    test.util.create_s3_bucket()
+    util.create_dynamodb_table()
+    util.create_s3_bucket()
     resp = lib.handler.delete_model({
         'pathParameters': {'model_id': '123abc'},
         }, None)
@@ -98,8 +98,8 @@ def test_delete_model():
 @mock_dynamodb2
 @mock_s3
 def test_run_model():
-    test.util.create_dynamodb_table()
-    test.util.create_s3_bucket()
+    util.create_dynamodb_table()
+    util.create_s3_bucket()
     resp = lib.handler.run_model({
         'pathParameters': {'model_id': '123abc'}, 'body': {},
         }, None)
@@ -109,8 +109,8 @@ def test_run_model():
 @mock_dynamodb2
 @mock_s3
 def test_compile_model():
-    test.util.create_dynamodb_table()
-    test.util.create_s3_bucket()
+    util.create_dynamodb_table()
+    util.create_s3_bucket()
     resp = lib.handler.compile_model({
         'Records': [{
             'eventName': 'ObjectCreated:Put',
