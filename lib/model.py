@@ -170,7 +170,7 @@ def compile_model(model_id):
     else:
         dummy_compiled_file_name = '/tmp/temp_compiled_file_{}.gzip'.format(model_id)
         sp.dump(dummy_compiled_file_name)
-        with open(dummy_compiled_file_name, 'r') as fp:
+        with open(dummy_compiled_file_name, 'rb') as fp:
             compiled_file_string = fp.read()
         # Write compiled file to S3 and update dynamodb record
         bucket.put_object(Key='compiled_models/{}'.format(model_id), Body=compiled_file_string)
