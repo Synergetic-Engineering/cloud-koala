@@ -29,11 +29,7 @@ provider:
     - Effect: "Allow"
       Action:
         - "s3:*"
-      Resource: arn:aws:s3:::${self:custom.bucket_name}/excel_uploads/*
-    - Effect: "Allow"
-      Action:
-        - "s3:*"
-      Resource: arn:aws:s3:::${self:custom.bucket_name}/compiled_models/*
+      Resource: arn:aws:s3:::${self:custom.bucket_name}/*
 
 custom:
   pythonRequirements:
