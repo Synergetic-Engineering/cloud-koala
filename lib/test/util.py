@@ -1,7 +1,7 @@
 import os
 
 import boto3
-
+from moto import mock_dynamodb2, mock_s3
 from koala.ExcelCompiler import ExcelCompiler
 
 # XXX need to set these environment variables before importing handler/lib
@@ -57,7 +57,7 @@ def create_s3_bucket():
         pass
     s3 = boto3.resource('s3')
     bucket = s3.Bucket(os.environ['S3_BUCKET'])
-    with open('test/test.xlsx', 'r') as f:
+    with open('lib/test/test.xlsx', 'r') as f:
         file_string = f.read()
         bucket.put_object(
             Bucket=os.environ['S3_BUCKET'],
@@ -69,9 +69,16 @@ def create_s3_bucket():
             Key='excel_uploads/456def',
             Body=file_string,
         )
-    with open('test/test.gzip', 'r') as f:
+    with open('lib/test/test.gzip', 'r') as f:
         bucket.put_object(
             Bucket=os.environ['S3_BUCKET'],
             Key='compiled_models/123abc',
             Body=f.read(),
         )
+
+def setup_mock_resources(func):
+    def _func(*args, **kwargs):
+        create_dynamodb_table()
+        create_s3_bucket()
+        return func(*args, **kwargs)
+    return mock_dynamodb2(mock_s3(_func))

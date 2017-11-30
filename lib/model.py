@@ -3,6 +3,7 @@ import time
 import uuid
 
 import boto3
+import botocore
 
 from openpyxl import load_workbook
 
@@ -26,6 +27,28 @@ def _update_bucket_parameter(model_id, param_name, content):
         ExpressionAttributeValues={":value":content}
     )
 
+def _move_bucket_object(start_folder, end_folder, model_id):
+    status = "200"
+    try:
+        bucket.put_object(
+            Body="",
+            Key='%s/%s'%(end_folder, model_id), ## big changes
+        )
+        obj = bucket.Object('%s/%s'%(end_folder, model_id))
+        obj.copy({
+            'Bucket': os.environ['S3_BUCKET'],
+            'Key': '%s/%s'%(start_folder, model_id)
+        })
+    except botocore.exceptions.ClientError as err:
+        if err.response['Error']['Code'] == "404":
+            status = "404"
+        else:
+            status = "Error"
+    finally:
+        bucket.delete_objects(Delete={
+            'Objects': [{'Key': '%s/%s'%(start_folder, model_id)}]
+        })
+    return status
 
 def list_models():
     """
@@ -63,48 +86,19 @@ def get_model(model_id):
     e.g. inputs, outputs
     maybe allow for optional level of detail to this?
     """
-    result = table.get_item(
-        Key={
-            'model_id': model_id,
-        }
-    )
-    return result['Item']
+    result = table.get_item(Key={'model_id': model_id})
+    return result.get('Item')
 
 
 def delete_model(model_id):
     """
     Delete the model record from S3 and either archive or delete related files in S3
     """
-    table.delete_item(
-        Key={
-            'model_id': model_id,
-        }
-    )
-    # Archive Objects
-    try:
-        bucket.put_object(
-            Body=bucket.Object('excel_uploads/{}'.format(model_id)).get()['Body'].read(),
-            Key='excel_uploads_archive/{}'.format(model_id),
-        )
-    except:
-        pass
-    try:
-        bucket.put_object(
-            Body=bucket.Object('compiled_models/{}'.format(model_id)).get()['Body'].read(),
-            Key='compiled_models_archive/{}'.format(model_id),
-        )
-    except:
-        pass
-    # Delete Objects
-    bucket.delete_objects(Delete={
-        'Objects': [
-            {'Key': 'excel_uploads/{}'.format(model_id)},
-            {'Key': 'compiled_models/{}'.format(model_id)},
-        ]
-    })
-
-    # TODO Check for error
-    return model_id
+    table.delete_item(Key={'model_id': model_id})
+    status = _move_bucket_object('excel_uploads', 'excel_uploads_archive', model_id)
+    if _move_bucket_object('compiled_models', 'compiled_models_archive', model_id) == "Error":
+        return {'status': "Error"}
+    return {'status': status}
 
 
 def run_model(model_id, payload):
@@ -120,13 +114,10 @@ def run_model(model_id, payload):
       - Build and return response
     """
     # see if compiled model compiled
-    comp_stat=""
-    for each in table.scan()['Items']:
-        if each['model_id']==model_id:
-            comp_stat = each['compilation_status']
-    if comp_stat!="Compiled":
-        return 'Model Not Compiled'
-    compliled_string = bucket.Object('compiled_models/{}'.format(model_id)).get()['Body'].read()
+    try:
+        compliled_string = bucket.Object('compiled_models/{}'.format(model_id)).get()['Body'].read()
+    except botocore.exceptions.ClientError as err:
+        return err.response['Error']['Code']
     # XXX HACK Workaround needed for koala spreadsheet loading API
     # - need to write the file to a temp location for koala to read it...
     # - FIX = koala.Spreadsheet / koala.serialize should be updated to take the file contents in directly

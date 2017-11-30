@@ -6,7 +6,7 @@ try:
 except ImportError:
     pass
 
-import lib
+from lib import model
 
 
 def build_response(body, status, content_type='application/json', filename=None):
@@ -46,7 +46,7 @@ def get_models(event, context):
     Inputs: None
     Returns: response with a list of available models
     """
-    return success(lib.list_models())
+    return success(model.list_models())
 
 
 def add_model(event, context):
@@ -58,7 +58,7 @@ def add_model(event, context):
     Returns: ID of the created model
     """
     file_name, file_string = get_file_from_event(event)
-    return success(lib.add_or_update_model(file_name, file_string))
+    return success(model.add_or_update_model(file_name, file_string))
 
 
 def get_model(event, context):
@@ -70,7 +70,7 @@ def get_model(event, context):
     Returns: An information dictionary about the requested model
     """
     model_id = event['pathParameters']['model_id']
-    return success(lib.get_model(model_id))
+    return success(model.get_model(model_id))
 
 
 def update_model(event, context):
@@ -85,7 +85,7 @@ def update_model(event, context):
     """
     model_id = event['pathParameters']['model_id']
     file_name, file_string = get_file_from_event(event)
-    return success(lib.add_or_update_model(file_name, file_string, model_id=model_id))
+    return success(model.add_or_update_model(file_name, file_string, model_id=model_id))
 
 
 def delete_model(event, context):
@@ -97,7 +97,7 @@ def delete_model(event, context):
     Returns: ID of the deleted model
     """
     model_id = event['pathParameters']['model_id']
-    return success(lib.delete_model(model_id))
+    return success(model.delete_model(model_id))
 
 
 def run_model(event, context):
@@ -115,7 +115,7 @@ def run_model(event, context):
         payload = json.loads(event.get('body') or '{}')
     except ValueError as err:
         return build_response("Malformed JSON in request: %s" % err.message, status=422)
-    return success(lib.run_model(model_id, payload))
+    return success(model.run_model(model_id, payload))
 
 
 def compile_model(event, context):
@@ -131,6 +131,6 @@ def compile_model(event, context):
     for record in event['Records']:
         if record['eventName'] == 'ObjectCreated:Put':
             model_id = record['s3']['object']['key'].replace('excel_uploads/', '')
-            resp = lib.compile_model(model_id)
+            resp = model.compile_model(model_id)
             responses.append(resp)
     return responses
