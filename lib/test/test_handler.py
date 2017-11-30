@@ -3,7 +3,6 @@
 from lib.test import util
 
 import boto3
-from moto import mock_dynamodb2, mock_s3
 boto3.setup_default_session(aws_access_key_id='123', aws_secret_access_key='123', region_name='ap-southeast-2')
 
 import base64
@@ -34,19 +33,15 @@ def test_get_file_from_event():
     assert file_string == '123457'
 
 
-@mock_dynamodb2
+@util.setup_mock_resources
 def test_get_models():
-    util.create_dynamodb_table()
     resp = lib.handler.get_models(None, None)
     assert resp['statusCode'] == 200
     print resp
 
 
-@mock_dynamodb2
-@mock_s3
+@util.setup_mock_resources
 def test_add_model():
-    util.create_dynamodb_table()
-    util.create_s3_bucket()
     with open('lib/test/test.xlsx') as f:
         resp = lib.handler.add_model({
             'body': {
@@ -57,22 +52,16 @@ def test_add_model():
     assert resp['statusCode'] == 200
 
 
-@mock_dynamodb2
-@mock_s3
+@util.setup_mock_resources
 def test_get_model():
-    util.create_dynamodb_table()
-    util.create_s3_bucket()
     resp = lib.handler.get_model({
         'pathParameters': {'model_id': '123abc'},
         }, None)
     assert resp['statusCode'] == 200
 
 
-@mock_dynamodb2
-@mock_s3
+@util.setup_mock_resources
 def test_update_model():
-    util.create_dynamodb_table()
-    util.create_s3_bucket()
     with open('lib/test/test.xlsx') as f:
         resp = lib.handler.update_model({
             'pathParameters': {'model_id': '123abc'},
@@ -84,33 +73,25 @@ def test_update_model():
     assert resp['statusCode'] == 200
 
 
-@mock_dynamodb2
-@mock_s3
+@util.setup_mock_resources
 def test_delete_model():
-    util.create_dynamodb_table()
-    util.create_s3_bucket()
     resp = lib.handler.delete_model({
         'pathParameters': {'model_id': '123abc'},
         }, None)
     assert resp['statusCode'] == 200
 
 
-@mock_dynamodb2
-@mock_s3
+@util.setup_mock_resources
 def test_run_model():
-    util.create_dynamodb_table()
-    util.create_s3_bucket()
+
     resp = lib.handler.run_model({
         'pathParameters': {'model_id': '123abc'}, 'body': {},
         }, None)
     assert resp['statusCode'] == 200
 
 
-@mock_dynamodb2
-@mock_s3
+@util.setup_mock_resources
 def test_compile_model():
-    util.create_dynamodb_table()
-    util.create_s3_bucket()
     resp = lib.handler.compile_model({
         'Records': [{
             'eventName': 'ObjectCreated:Put',
