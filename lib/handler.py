@@ -9,6 +9,7 @@ except ImportError:
 from lib import model
 
 
+
 def build_response(body, status, content_type='application/json', filename=None):
     response = {
         'headers': {
