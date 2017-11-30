@@ -2,13 +2,19 @@ import os
 
 import boto3
 from moto import mock_dynamodb2, mock_s3
-from koala.ExcelCompiler import ExcelCompiler
 
-# XXX need to set these environment variables before importing handler/lib
-# Figure there'll be a better way to do this once we use moto?
-# XXX - shouldn't actually be deployed resources, the should be mock ones using moto
+
 os.environ['DYNAMODB_TABLE'] = 'moto-test-table'
 os.environ['S3_BUCKET'] = 'moto-test-bucket'
+
+
+def setup_mock_resources(func):
+    def _func(*args, **kwargs):
+        create_dynamodb_table()
+        create_s3_bucket()
+        return func(*args, **kwargs)
+    return mock_dynamodb2(mock_s3(_func))
+
 
 def create_dynamodb_table():
     dynamodb_client = boto3.client("dynamodb")
@@ -49,6 +55,7 @@ def create_dynamodb_table():
         'compilation_status':'Waiting'
     })
 
+
 def create_s3_bucket():
     s3_client = boto3.client("s3")
     try:
@@ -75,10 +82,3 @@ def create_s3_bucket():
             Key='compiled_models/123abc',
             Body=f.read(),
         )
-
-def setup_mock_resources(func):
-    def _func(*args, **kwargs):
-        create_dynamodb_table()
-        create_s3_bucket()
-        return func(*args, **kwargs)
-    return mock_dynamodb2(mock_s3(_func))

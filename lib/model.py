@@ -147,6 +147,7 @@ def compile_model(model_id):
     # - need to write the file to a temp location for koala to read it...
     # - then need to write koala compiled file from a temp location...
     # - FIX = koala.Spreadsheet / koala.serialize should be updated to take the file contents in directly
+    return_str = ''
     if not os.path.exists('/tmp'): # mainly required for dev / test environment
         os.mkdir('/tmp')
     dummy_excel_file_name = '/tmp/temp_excel_file_{}.xlsx'.format(model_id)
