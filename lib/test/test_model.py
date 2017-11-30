@@ -89,7 +89,7 @@ def test_run_model():
 
 @util.setup_mock_resources
 def test_compile_model():
-    lib.model.compile_model('123abc')
+    lib.model.compile_model('456def')
     # check in s3 compiled models bucket
-    assert 'compiled_models/123abc' in _get_bucket_model_ids()
+    assert 'compiled_models/456def' in _get_bucket_model_ids()
 
