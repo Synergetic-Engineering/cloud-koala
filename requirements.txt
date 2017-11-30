@@ -1,3 +1,2 @@
 boto3
 koala2
-botocore
