@@ -6,7 +6,7 @@ import boto3
 from moto import mock_dynamodb2, mock_s3
 boto3.setup_default_session(aws_access_key_id='123', aws_secret_access_key='123', region_name='ap-southeast-2')
 
-from lib import model
+import lib.model
 
 import os
 
@@ -42,7 +42,7 @@ def _get_file_string():
 def test_list_models():
     test.util.create_dynamodb_table()
     test.util.create_s3_bucket()
-    model.list_models()
+    lib.model.list_models()
 
 
 @mock_dynamodb2
@@ -51,7 +51,7 @@ def test_add_model():
     test.util.create_dynamodb_table()
     test.util.create_s3_bucket()
     file_string = _get_file_string()
-    model_id = model.add_or_update_model('file_name', file_string)
+    model_id = lib.model.add_or_update_model('file_name', file_string)
     # check model_id is in dynamodb and s3
     assert model_id in _get_table_model_ids()
     assert 'excel_uploads/{}'.format(model_id) in _get_bucket_model_ids()
@@ -63,7 +63,7 @@ def test_update_model():
     test.util.create_dynamodb_table()
     test.util.create_s3_bucket()
     file_string = _get_file_string()
-    model.add_or_update_model('file_name', file_string, model_id='123abc')
+    lib.model.add_or_update_model('file_name', file_string, model_id='123abc')
     # check model_id is still in dynamodb and s3
     assert '123abc' in _get_table_model_ids()
     assert 'excel_uploads/123abc' in _get_bucket_model_ids()
@@ -76,7 +76,7 @@ def test_update_model():
 def test_get_model():
     test.util.create_dynamodb_table()
     test.util.create_s3_bucket()
-    model.get_model('123abc')
+    lib.model.get_model('123abc')
 
 
 @mock_dynamodb2
@@ -84,7 +84,7 @@ def test_get_model():
 def test_delete_model():
     test.util.create_dynamodb_table()
     test.util.create_s3_bucket()
-    print model.delete_model('123abc')
+    print lib.model.delete_model('123abc')
     # check out of dynamodb table
     assert '123abc' not in _get_table_model_ids()
     # S3 Bucket Checks
@@ -103,7 +103,7 @@ def test_delete_model():
 def test_run_model():
     test.util.create_dynamodb_table()
     test.util.create_s3_bucket()
-    model.run_model('123abc', {})
+    lib.model.run_model('123abc', {})
 
 
 @mock_dynamodb2
@@ -111,7 +111,7 @@ def test_run_model():
 def test_compile_model():
     test.util.create_dynamodb_table()
     test.util.create_s3_bucket()
-    model.compile_model('123abc')
+    lib.model.compile_model('123abc')
     # check in s3 compiled models bucket
     assert 'compiled_models/123abc' in _get_bucket_model_ids()
 
