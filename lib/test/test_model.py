@@ -15,20 +15,14 @@ s3 = boto3.resource('s3')
 bucket = s3.Bucket(os.environ['S3_BUCKET'])
 
 def _get_table_model_ids():
-    model_idList = []
-    for each in table.scan()['Items']:
-        model_idList.append(each['model_id'])
-    return model_idList
+    return [each['model_id'] for each in table.scan()['Items']]
 
 def _get_bucket_model_ids():
-    model_idList = []
-    for each in bucket.objects.all():
-        model_idList.append(each.key)
-    return model_idList
+    return [each.key for each in bucket.objects.all()]
 
 def _get_table_model_parameter(model_id, parameter):
     for each in table.scan()['Items']:
-        if each['model_id']==model_id:
+        if each['model_id'] == model_id:
             return each[parameter]
 
 def _get_file_string():
@@ -58,7 +52,7 @@ def test_update_model():
     assert '123abc' in _get_table_model_ids()
     assert 'excel_uploads/123abc' in _get_bucket_model_ids()
     # check version==2
-    assert _get_table_model_parameter('123abc', 'version')==str(2)
+    assert _get_table_model_parameter('123abc', 'version') == str(2)
 
 
 @util.setup_mock_resources
@@ -92,4 +86,3 @@ def test_compile_model():
     lib.model.compile_model('456def')
     # check in s3 compiled models bucket
     assert 'compiled_models/456def' in _get_bucket_model_ids()
-
