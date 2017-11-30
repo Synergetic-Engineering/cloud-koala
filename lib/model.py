@@ -27,6 +27,28 @@ def _update_bucket_parameter(model_id, param_name, content):
         ExpressionAttributeValues={":value":content}
     )
 
+def _move_bucket_object(start_folder, end_folder, model_id):
+    status = "200"
+    try:
+        bucket.put_object(
+            Body="",
+            Key='%s/%s'%(end_folder, model_id), ## big changes
+        )
+        obj = bucket.Object('%s/%s'%(end_folder, model_id))
+        obj.copy({
+            'Bucket': os.environ['S3_BUCKET'],
+            'Key': '%s/%s'%(start_folder, model_id)
+        })
+    except botocore.exceptions.ClientError as err:
+        if err.response['Error']['Code'] == "404":
+            status = "404"
+        else:
+            status = "Error"
+    finally:
+        bucket.delete_objects(Delete={
+            'Objects': [{'Key': '%s/%s'%(start_folder, model_id)}]
+        })
+    return status
 
 def list_models():
     """
@@ -72,56 +94,11 @@ def delete_model(model_id):
     """
     Delete the model record from S3 and either archive or delete related files in S3
     """
-    table.delete_item(
-        Key={
-            'model_id': model_id,
-        }
-    )
-    status='200'
-    # Archive Objects
-    try:
-        bucket.put_object(
-            Body="",
-            Key='excel_uploads_archive/{}'.format(model_id),
-        )
-        obj = bucket.Object('excel_uploads_archive/{}'.format(model_id))
-        obj.copy({
-            'Bucket': os.environ['S3_BUCKET'],
-            'Key': 'excel_uploads/{}'.format(model_id)
-        })
-    except botocore.exceptions.ClientError as er:
-        print er
-        if er.response['Error']['Code'] == "404":
-            status='404 - excel'
-        else:
-            status='error - excel'
-    finally:
-        bucket.delete_objects(Delete={
-            'Objects': [{'Key': 'excel_uploads/{}'.format(model_id)}]
-        })
-    try:
-        bucket.put_object(
-            Body="",
-            Key='compiled_models_archive/{}'.format(model_id),
-        )
-        obj = bucket.Object('compiled_models_archive/{}'.format(model_id))
-        obj.copy({
-            'Bucket': os.environ['S3_BUCKET'],
-            'Key': 'compiled_models/{}'.format(model_id)
-        })
-    except botocore.exceptions.ClientError as er:
-        print er
-        if er.response['Error']['Code'] == "404":
-            pass
-        else:   
-            if status=='error - excel':
-                status=status+', error - compiled'
-    finally:
-        bucket.delete_objects(Delete={
-            'Objects': [{'Key': 'compiled_models/{}'.format(model_id)}]
-        })
-    # TODO Check for error
-    return {'model_id':model_id, 'status':status}
+    table.delete_item(Key={'model_id': model_id})
+    status = _move_bucket_object('excel_uploads', 'excel_uploads_archive', model_id)
+    if _move_bucket_object('compiled_models', 'compiled_models_archive', model_id) == "Error":
+       return {'status': "Error"}
+    return {'status': status}
 
 
 def run_model(model_id, payload):
