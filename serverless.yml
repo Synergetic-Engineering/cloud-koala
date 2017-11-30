@@ -45,42 +45,42 @@ custom:
 functions:
   # API functions
   get_models:
-    handler: handler.get_models
+    handler: lib/handler.get_models
     events:
       - http:
           path: models
           method: get
           cors: true
   add_model:
-    handler: handler.add_model
+    handler: lib/handler.add_model
     events:
       - http:
           path: models
           method: post
           cors: true
   get_model:
-    handler: handler.get_model
+    handler: lib/handler.get_model
     events:
       - http:
           path: models/{model_id}
           method: get
           cors: true
   run_model:
-    handler: handler.run_model
+    handler: lib/handler.run_model
     events:
       - http:
           path: models/{model_id}
           method: post
           cors: true
   update_model:
-    handler: handler.update_model
+    handler: lib/handler.update_model
     events:
       - http:
           path: models/{model_id}
           method: post
           cors: true
   delete_model:
-    handler: handler.delete_model
+    handler: lib/handler.delete_model
     events:
       - http:
           path: models/{model_id}
@@ -89,7 +89,7 @@ functions:
 
   # Back-end functions
   compile_model:
-    handler: handler.compile_model
+    handler: lib/handler.compile_model
     events:
       - s3:
           bucket: ${self:custom.bucket_name}

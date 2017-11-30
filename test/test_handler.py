@@ -8,7 +8,7 @@ boto3.setup_default_session(aws_access_key_id='123', aws_secret_access_key='123'
 
 import base64
 
-import handler
+from lib import handler
 
 
 def test_build_response():
