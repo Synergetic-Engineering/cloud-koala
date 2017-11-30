@@ -3,6 +3,7 @@ import time
 import uuid
 
 import boto3
+import botocore
 
 from openpyxl import load_workbook
 
@@ -80,36 +81,42 @@ def delete_model(model_id):
     # Archive Objects
     try:
         bucket.put_object(
-            Body=bucket.Object('excel_uploads/{}'.format(model_id)).get()['Body'].read(),
+            Body="",
             Key='excel_uploads_archive/{}'.format(model_id),
         )
-    except Exception as er:
+        obj = bucket.Object('excel_uploads_archive/{}'.format(model_id))
+        obj.copy({
+            'Bucket': os.environ['S3_BUCKET'],
+            'Key': 'excel_uploads/{}'.format(model_id)
+        })
+    except botocore.exceptions.ClientError as er:
         print er
-        if len(str(er).split(':'))>1 and str(er).split(':')[1]==" The specified key does not exist.":
-            # Model Not In Compiled Folder
-            print er
+        if er.response['Error']['Code'] == "404":
             status='404 - excel'
         else:
             status='error - excel'
     finally:
-    # Delete Objects
         bucket.delete_objects(Delete={
             'Objects': [{'Key': 'excel_uploads/{}'.format(model_id)}]
         })
     try:
         bucket.put_object(
-            Body=bucket.Object('compiled_models/{}'.format(model_id)).get()['Body'].read(),
+            Body="",
             Key='compiled_models_archive/{}'.format(model_id),
         )
-    except Exception as er:
-        if len(str(er).split(':'))>1 and str(er).split(':')[1]==" The specified key does not exist.":
-            print er
-        else:
-            print er
+        obj = bucket.Object('compiled_models_archive/{}'.format(model_id))
+        obj.copy({
+            'Bucket': os.environ['S3_BUCKET'],
+            'Key': 'compiled_models/{}'.format(model_id)
+        })
+    except botocore.exceptions.ClientError as er:
+        print er
+        if er.response['Error']['Code'] == "404":
+            pass
+        else:   
             if status=='error - excel':
                 status=status+', error - compiled'
     finally:
-        # Delete Objects
         bucket.delete_objects(Delete={
             'Objects': [{'Key': 'compiled_models/{}'.format(model_id)}]
         })
