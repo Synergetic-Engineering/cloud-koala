@@ -97,7 +97,7 @@ def delete_model(model_id):
     table.delete_item(Key={'model_id': model_id})
     status = _move_bucket_object('excel_uploads', 'excel_uploads_archive', model_id)
     if _move_bucket_object('compiled_models', 'compiled_models_archive', model_id) == "Error":
-       return {'status': "Error"}
+        return {'status': "Error"}
     return {'status': status}
 
 
