@@ -76,27 +76,45 @@ def delete_model(model_id):
             'model_id': model_id,
         }
     )
+    status='200'
     # Archive Objects
-    if 'excel_uploads/{}'.format(model_id) in list_models():
+    try:
         bucket.put_object(
             Body=bucket.Object('excel_uploads/{}'.format(model_id)).get()['Body'].read(),
             Key='excel_uploads_archive/{}'.format(model_id),
         )
-    if 'compiled_models/{}'.format(model_id) in list_models():
+    except Exception as er:
+        print er
+        if len(str(er).split(':'))>1 and str(er).split(':')[1]==" The specified key does not exist.":
+            # Model Not In Compiled Folder
+            print er
+            status='404 - excel'
+        else:
+            status='error - excel'
+    finally:
+    # Delete Objects
+        bucket.delete_objects(Delete={
+            'Objects': [{'Key': 'excel_uploads/{}'.format(model_id)}]
+        })
+    try:
         bucket.put_object(
             Body=bucket.Object('compiled_models/{}'.format(model_id)).get()['Body'].read(),
             Key='compiled_models_archive/{}'.format(model_id),
         )
-    # Delete Objects
-    bucket.delete_objects(Delete={
-        'Objects': [
-            {'Key': 'excel_uploads/{}'.format(model_id)},
-            {'Key': 'compiled_models/{}'.format(model_id)},
-        ]
-    })
-
+    except Exception as er:
+        if len(str(er).split(':'))>1 and str(er).split(':')[1]==" The specified key does not exist.":
+            print er
+        else:
+            print er
+            if status=='error - excel':
+                status=status+', error - compiled'
+    finally:
+        # Delete Objects
+        bucket.delete_objects(Delete={
+            'Objects': [{'Key': 'compiled_models/{}'.format(model_id)}]
+        })
     # TODO Check for error
-    return model_id
+    return {'model_id':model_id, 'status':status}
 
 
 def run_model(model_id, payload):
