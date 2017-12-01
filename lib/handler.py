@@ -9,7 +9,6 @@ except ImportError:
 from lib import model
 
 
-
 def build_response(body, status, content_type='application/json', filename=None):
     response = {
         'headers': {
@@ -33,10 +32,11 @@ def success(body, content_type='application/json', filename=None):
     return response
 
 
-def get_file_from_event(event):
+def _get_file_from_event(event):
     # TODO double check how we want to expect the xlsx file to be included
-    file_name = event['body']['file_name']
-    file_string = base64.b64decode(event['body']['file_string'])
+    payload = json.loads(event.get('body') or '{}')
+    file_name = payload.get('file_name', '')
+    file_string = base64.b64decode(payload.get('file_string', ''))
     return file_name, file_string
 
 
@@ -58,7 +58,7 @@ def add_model(event, context):
       - body: Excel file (required)
     Returns: ID of the created model
     """
-    file_name, file_string = get_file_from_event(event)
+    file_name, file_string = _get_file_from_event(event)
     return success(model.add_or_update_model(file_name, file_string))
 
 
@@ -85,7 +85,7 @@ def update_model(event, context):
     Returns: ID of the updated model
     """
     model_id = event['pathParameters']['model_id']
-    file_name, file_string = get_file_from_event(event)
+    file_name, file_string = _get_file_from_event(event)
     return success(model.add_or_update_model(file_name, file_string, model_id=model_id))
 
 
