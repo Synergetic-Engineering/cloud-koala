@@ -41,12 +41,26 @@ sls deploy
 
 ## Development
 
-Developing requires Python, we recommend using a virtualenv, for example:
+Developing requires Python, we recommend using a virtualenv, for example on linux, run:
 
 ```bash
 virtualenv env
 source env/bin/activate
-pip install -r requirements
+pip install -r requirements.txt
+```
+
+And on windows, run:
+
+```bash
+python -m virtualenv env
+env/Scripts/activate
+pip install -r requirements.txt
+```
+
+It can also be useful to install the test requirements when developing
+
+```bash
+pip install -r lib/test/test_requirements.txt
 ```
 
 ## Testing locally
