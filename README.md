@@ -133,7 +133,7 @@ sls invoke --stage=dev --function=delete_model --path=lib/test/mock_events/delet
 
 This project has been inspired by the nifty python library [Koala](https://github.com/anthill/koala) :koala: ([koala2](https://pypi.python.org/pypi/koala2) on pypi) developed by [WeAreAnts](http://weareants.fr/) :ant:.
 
-Thanks also to the developers of the [Serverless Framework](http://www.serverless.com) and [lambci](https://github.com/lambci/lambci).
+Thanks also to the developers of the [Serverless Framework](http://www.serverless.com), [serverless-python-requirements](https://github.com/UnitedIncome/serverless-python-requirements) and [lambci](https://github.com/lambci/lambci).
 
 ## Licence
 
