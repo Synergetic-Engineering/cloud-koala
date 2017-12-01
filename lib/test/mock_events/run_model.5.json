@@ -1,5 +1,6 @@
 {
     "pathParameters": {
         "model_id": "test_id"
-    }
+    },
+    "body": "{\"input_dict\": {\"Sheet1!B2\": 2, \"Sheet1!B3\": 3},\"output_names\": [\"Sheet1!B11\",\"Sheet1!B12\"]}"
 }
