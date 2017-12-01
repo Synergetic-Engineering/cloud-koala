@@ -73,7 +73,7 @@ functions:
     events:
       - http:
           path: models/{model_id}
-          method: post
+          method: put
           cors: true
   delete_model:
     handler: lib/handler.delete_model
