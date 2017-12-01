@@ -79,7 +79,7 @@ def test_delete_model():
 
 @util.setup_mock_resources
 def test_run_model():
-    lib.model.run_model('123abc', {})
+    lib.model.run_model('123abc', {}, [])
 
 
 @util.setup_mock_resources
