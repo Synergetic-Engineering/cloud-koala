@@ -1,3 +1,5 @@
+import os
+
 # XXX this needs to happen before importing other stuff to set
 # env variables
 from lib.test import util
@@ -7,7 +9,6 @@ boto3.setup_default_session(aws_access_key_id='123', aws_secret_access_key='123'
 
 import lib.model
 
-import os
 
 dynamodb = boto3.resource('dynamodb')
 table = dynamodb.Table(os.environ['DYNAMODB_TABLE'])
