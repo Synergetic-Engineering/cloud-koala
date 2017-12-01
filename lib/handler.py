@@ -9,6 +9,7 @@ except ImportError:
 from lib import model
 
 
+
 def build_response(body, status, content_type='application/json', filename=None):
     response = {
         'headers': {
@@ -115,7 +116,9 @@ def run_model(event, context):
         payload = json.loads(event.get('body') or '{}')
     except ValueError as err:
         return build_response("Malformed JSON in request: %s" % err.message, status=422)
-    return success(model.run_model(model_id, payload))
+    input_dict = payload.get('input_dict', {})
+    output_names = payload.get('output_names', [])
+    return success(model.run_model(model_id, input_dict, output_names))
 
 
 def compile_model(event, context):
@@ -134,3 +137,4 @@ def compile_model(event, context):
             resp = model.compile_model(model_id)
             responses.append(resp)
     return responses
+

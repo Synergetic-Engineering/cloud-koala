@@ -105,7 +105,7 @@ def delete_model(model_id):
     return {'status': status}
 
 
-def run_model(model_id, payload):
+def run_model(model_id, input_dict, output_names):
     """
     Load the model, set the inputs and return the calculated outputs
     TODO get this working roughly following these steps
@@ -131,8 +131,11 @@ def run_model(model_id, payload):
     with open(dummy_file_name, 'wb') as fp:
         fp.write(compliled_string)
     sp = Spreadsheet.load(dummy_file_name)
-    # TODO actually run the model and build the results
+    for name, value in input_dict.iteritems():
+        sp.set_value(name, value)
     results = {}
+    for name in output_names:
+        results[name] = sp.evaluate(name)
     # Cleanup previous workaround
     os.remove(dummy_file_name)
     if not os.listdir('/tmp'):
