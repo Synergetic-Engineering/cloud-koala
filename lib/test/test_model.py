@@ -79,7 +79,25 @@ def test_delete_model():
 
 @util.setup_mock_resources
 def test_run_model():
-    lib.model.run_model('123abc', {}, [])
+    # Multiple inputs and outputs
+    result = lib.model.run_model('123abc', {'Sheet1!B2': 2, 'Sheet1!B3': 3}, ['Sheet1!B11','Sheet1!B12'])
+    assert result == {'Sheet1!B11': 10.0,'Sheet1!B12': 5.7}
+    # No inputs or outputs
+    result = lib.model.run_model('123abc', {}, [])
+    assert result == {}
+    # No inputs and output specified
+    result = lib.model.run_model('123abc', {}, ['Sheet1!B12'])
+    assert result == {'Sheet1!B12': 5.5}
+    # Inputs specified and no outputs
+    result = lib.model.run_model('123abc', {'Sheet1!B2': 2}, [])
+    assert result == {}
+    # Multiple inputs and no outputs
+    result = lib.model.run_model('123abc', {'Sheet1!B2': 2, 'Sheet1!B4': 3, 'Sheet1!B6': 7}, [])
+    assert result == {}
+    # Multiple outputs and no inputs
+    result = lib.model.run_model('123abc', {}, ['Sheet1!B11','Sheet1!B12'])
+    assert result == {'Sheet1!B11': 10.0,'Sheet1!B12': 5.5}
+
 
 
 @util.setup_mock_resources
