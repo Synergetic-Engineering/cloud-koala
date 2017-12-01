@@ -1,11 +1,11 @@
+import base64
+
 # XXX this needs to happen before importing other stuff to set
 # env variables
 from lib.test import util
 
 import boto3
 boto3.setup_default_session(aws_access_key_id='123', aws_secret_access_key='123', region_name='ap-southeast-2')
-
-import base64
 
 import lib.handler
 
@@ -23,14 +23,11 @@ def test_success():
 
 
 def test_get_file_from_event():
-    file_name, file_string = lib.handler.get_file_from_event({
-        'body': {
-            'file_name': 'abc.xlsx',
-            'file_string': base64.b64encode('123457'),
-        },
+    file_name, file_string = lib.handler._get_file_from_event({
+        'body': '{"file_name": "abc.xlsx", "file_string": "%s"}' % base64.b64encode('blinky-bill'),
     })
     assert file_name == 'abc.xlsx'
-    assert file_string == '123457'
+    assert file_string == 'blinky-bill'
 
 
 @util.setup_mock_resources
@@ -44,10 +41,7 @@ def test_get_models():
 def test_add_model():
     with open('lib/test/test.xlsx') as f:
         resp = lib.handler.add_model({
-            'body': {
-                'file_name': 'abc.xlsx',
-                'file_string': base64.b64encode(f.read()),
-            },
+            'body': '{"file_name": "abc.xlsx", "file_string": "%s"}' % base64.b64encode(f.read()),
             }, None)
     assert resp['statusCode'] == 200
 
@@ -65,10 +59,7 @@ def test_update_model():
     with open('lib/test/test.xlsx') as f:
         resp = lib.handler.update_model({
             'pathParameters': {'model_id': '123abc'},
-            'body': {
-                'file_name': 'abc.xlsx',
-                'file_string': base64.b64encode(f.read()),
-            },
+            'body': '{"file_name": "abc.xlsx", "file_string": "%s"}' % base64.b64encode(f.read()),
             }, None)
     assert resp['statusCode'] == 200
 
@@ -83,9 +74,9 @@ def test_delete_model():
 
 @util.setup_mock_resources
 def test_run_model():
-
     resp = lib.handler.run_model({
-        'pathParameters': {'model_id': '123abc'}, 'body': {},
+        'pathParameters': {'model_id': '123abc'},
+        'body': '{"input_dict": {"Sheet1!B2": 2}, "output_names": ["Sheet1!B12"]}',
         }, None)
     assert resp['statusCode'] == 200
 
