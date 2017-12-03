@@ -54,6 +54,12 @@ def _move_bucket_object(start_folder, end_folder, model_id):
         })
     return status
 
+def get_model_config(file_string):
+    # TODO (eventually integrate with add_or_update_model and maybe make
+    # this a helper function -> _get_model_config)
+    return file_string
+
+
 def list_models():
     """
     List the available models in S3

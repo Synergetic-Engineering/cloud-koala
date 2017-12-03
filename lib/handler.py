@@ -50,6 +50,13 @@ def get_models(event, context):
     return success(model.list_models())
 
 
+def model_config(event, context):
+    # TODO
+    file_name, file_string = _get_file_from_event(event)
+    # Dummy input to avoid errors of giving actual file_string to successs
+    return success(model.get_model_config("file_string"))
+
+
 def add_model(event, context):
     """
     Upload a new Excel model for koala object compilation and serialisation

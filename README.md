@@ -11,6 +11,8 @@ Cloud Koala packages [Koala](https://github.com/anthill/koala) (from [WeAreAnts]
 * `https://.../models`
     * `GET` - list of available calculations
     * `POST` - upload an Excel model to compile it into a Koala serialized python object, responds with the model's ID
+    * `POST` - given an Excel file, return the configuration data
+    (inputs and outputs)
 * `https://.../models/{model_id}`
     * `GET` - model info
     * `PUT` - update model
@@ -89,6 +91,11 @@ sls invoke --stage=dev --function=add_model --path=lib/test/mock_events/add_mode
 Check that the model has been added and compiled:
 ```bash
 sls invoke --stage=dev --function=get_models --path=lib/test/mock_events/get_models.3.json
+```
+
+Check model configuration data:
+```bash
+sls invoke --stage=dev --function=model_config --path=lib/test/mock_events/model_config.7.json
 ```
 
 Add model with invalid model:

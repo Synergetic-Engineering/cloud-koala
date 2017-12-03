@@ -99,9 +99,15 @@ def test_run_model():
     assert result == {'Sheet1!B11': 10.0,'Sheet1!B12': 5.5}
 
 
-
 @util.setup_mock_resources
 def test_compile_model():
     lib.model.compile_model('456def')
     # check in s3 compiled models bucket
     assert 'compiled_models/456def' in _get_bucket_model_ids()
+
+
+@util.setup_mock_resources
+def test_get_model_config():
+    # TODO make more meaningful to functionality of get_model_config
+    file_string = _get_file_string()
+    assert lib.model.get_model_config(file_string) == file_string
