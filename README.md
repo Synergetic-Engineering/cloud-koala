@@ -17,8 +17,7 @@ Cloud Koala packages [Koala](https://github.com/anthill/koala) (from [WeAreAnts]
     * `POST` - upload model input data, responds with results from the model
     * `DELETE` - remove model
 * `https://.../config`
-    * `POST` - given an Excel file, return the configuration data
-    (inputs and outputs)
+    * `POST` - Add an auto-generated config sheet to a given Excel workbook
 
 ## Requirements
 
