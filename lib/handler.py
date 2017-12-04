@@ -51,10 +51,17 @@ def get_models(event, context):
 
 
 def model_config(event, context):
+    """
+    Create a config sheet for a given file
+    Trigger event: POST https://.../config
+    Inputs:
+      - body: Excel file (required)
+    Returns: Excel file with the new config sheet
+    """
     # TODO
     file_name, file_string = _get_file_from_event(event)
-    # Dummy input to avoid errors of giving actual file_string to successs
-    return success(model.get_model_config("file_string"))
+    output_file_string = base64.b64encode(model.get_model_config(file_string))
+    return success({'file_string': output_file_string})
 
 
 def add_model(event, context):

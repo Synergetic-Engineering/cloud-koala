@@ -11,13 +11,14 @@ Cloud Koala packages [Koala](https://github.com/anthill/koala) (from [WeAreAnts]
 * `https://.../models`
     * `GET` - list of available calculations
     * `POST` - upload an Excel model to compile it into a Koala serialized python object, responds with the model's ID
-    * `POST` - given an Excel file, return the configuration data
-    (inputs and outputs)
 * `https://.../models/{model_id}`
     * `GET` - model info
     * `PUT` - update model
     * `POST` - upload model input data, responds with results from the model
     * `DELETE` - remove model
+* `https://.../config`
+    * `POST` - given an Excel file, return the configuration data
+    (inputs and outputs)
 
 ## Requirements
 
