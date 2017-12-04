@@ -59,8 +59,9 @@ def model_config(event, context):
     Returns: Excel file with the new config sheet
     """
     # TODO
+    model_id = event['pathParameters']['model_id']
     file_name, file_string = _get_file_from_event(event)
-    output_file_string = base64.b64encode(model.get_model_config(file_string))
+    output_file_string = base64.b64encode(model.get_model_config(file_string, model_id=model_id))
     return success({'file_string': output_file_string})
 
 

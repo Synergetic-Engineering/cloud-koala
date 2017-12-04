@@ -54,9 +54,35 @@ def _move_bucket_object(start_folder, end_folder, model_id):
         })
     return status
 
-def get_model_config(file_string):
+def get_model_config(file_string, model_id):
+    if not os.path.exists('/tmp'): # mainly required for dev / test environment
+        os.mkdir('/tmp')
+    dummy_excel_file_name = '/tmp/temp_excel_file_{}.xlsx'.format(model_id)
+    with open(dummy_excel_file_name, 'wb') as fp:
+        fp.write(file_string)
+    
     # TODO (eventually integrate with add_or_update_model and maybe make
     # this a helper function -> _get_model_config)
+    import openpyxl
+
+    wb = load_workbook((dummy_excel_file_name), data_only=True)  # Assuming dummy_excel_file_name is the equivalent xls file
+
+    # Create new worksheet
+    config_sheet= wb.create_sheet("cloud-koala-config")
+    # Create column headers
+    headers= ['type','sheet','cell']
+    for row in config_sheet.iter_rows(min_row=1, max_col=3, max_row=1):
+        for i,cell in enumerate(row):
+            cell.value= headers[i]
+
+    # TODO get openpyxl to read the inputs and outputs for the remaining sheets
+
+    # Saving the excel_file with the config sheet attached (need to change name to suit binary format)
+    wb.save('new.xlsx')
+
+    os.remove(dummy_excel_file_name)
+    if not os.listdir('/tmp'):
+        os.rmdir('/tmp')
     return file_string
 
 
