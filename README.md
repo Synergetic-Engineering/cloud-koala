@@ -93,7 +93,7 @@ Check that the model has been added and compiled:
 sls invoke --stage=dev --function=get_models --path=lib/test/mock_events/get_models.3.json
 ```
 
-Check model configuration data:
+Generate model configuration data:
 ```bash
 sls invoke --stage=dev --function=model_config --path=lib/test/mock_events/model_config.7.json
 ```
