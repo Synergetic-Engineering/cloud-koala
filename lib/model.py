@@ -130,12 +130,12 @@ def run_model(model_id, input_dict, output_names):
     dummy_file_name = '/tmp/temp_{}.gzip'.format(model_id)
     with open(dummy_file_name, 'wb') as fp:
         fp.write(compliled_string)
-    sp = Spreadsheet.load(dummy_file_name)
+    sheet = Spreadsheet.load(dummy_file_name)
     for name, value in input_dict.iteritems():
-        sp.set_value(name, value)
+        sheet.set_value(name, value)
     results = {}
     for name in output_names:
-        results[name] = sp.evaluate(name)
+        results[name] = sheet.evaluate(name)
     # Cleanup previous workaround
     os.remove(dummy_file_name)
     if not os.listdir('/tmp'):
@@ -158,7 +158,7 @@ def compile_model(model_id):
         fp.write(compliled_string)
     try:
         compiler = ExcelCompiler(dummy_excel_file_name)
-        sp = compiler.gen_graph()
+        sheet = compiler.gen_graph()
     except IOError as err:
         print err
         _update_bucket_parameter(model_id, "compilation_status", "Failed (Invalid Excel File)")
@@ -173,7 +173,7 @@ def compile_model(model_id):
         return_str = 'model {} did not compile'.format(model_id)
     else:
         dummy_compiled_file_name = '/tmp/temp_compiled_file_{}.gzip'.format(model_id)
-        sp.dump(dummy_compiled_file_name)
+        sheet.dump(dummy_compiled_file_name)
         with open(dummy_compiled_file_name, 'rb') as fp:
             compiled_file_string = fp.read()
         # Write compiled file to S3 and update dynamodb record
