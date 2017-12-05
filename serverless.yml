@@ -40,19 +40,13 @@ custom:
 
 functions:
   # API functions
+  # /models
   get_models:
     handler: lib/handler.get_models
     events:
       - http:
           path: models
           method: get
-          cors: true
-  model_config:
-    handler: lib/handler.model_config
-    events:
-      - http:
-          path: config
-          method: post
           cors: true
   add_model:
     handler: lib/handler.add_model
@@ -61,6 +55,7 @@ functions:
           path: models
           method: post
           cors: true
+  # /models/{model_id}
   get_model:
     handler: lib/handler.get_model
     events:
@@ -88,6 +83,14 @@ functions:
       - http:
           path: models/{model_id}
           method: delete
+          cors: true
+  # /config
+  model_config:
+    handler: lib/handler.model_config
+    events:
+      - http:
+          path: config
+          method: post
           cors: true
 
   # Back-end functions
