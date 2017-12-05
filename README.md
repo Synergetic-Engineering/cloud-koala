@@ -93,11 +93,6 @@ Check that the model has been added and compiled:
 sls invoke --stage=dev --function=get_models --path=lib/test/mock_events/get_models.3.json
 ```
 
-Generate model configuration data:
-```bash
-sls invoke --stage=dev --function=model_config --path=lib/test/mock_events/model_config.7.json
-```
-
 Add model with invalid model:
 ```bash
 sls invoke --stage=dev --function=add_model --path=lib/test/mock_events/add_model.1a.json
@@ -134,6 +129,11 @@ sls invoke --stage=dev --function=delete_model --path=lib/test/mock_events/delet
 ```
 
 (The models created using `add_model` will not be deleted in this process)
+
+Generate model configuration data:
+```bash
+sls invoke --stage=dev --function=create_config_sheet --path=lib/test/mock_events/create_config_sheet.7.json
+```
 
 
 ## Credit
