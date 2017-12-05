@@ -54,36 +54,75 @@ def _move_bucket_object(start_folder, end_folder, model_id):
         })
     return status
 
-def get_model_config(file_string, model_id):
+def get_model_config(file_string):
     if not os.path.exists('/tmp'): # mainly required for dev / test environment
         os.mkdir('/tmp')
-    dummy_excel_file_name = '/tmp/temp_excel_file_{}.xlsx'.format(model_id)
+    temp_id = uuid.uuid4().hex
+    dummy_excel_file_name = '/tmp/temp_excel_file_{}.xlsx'.format(temp_id)
     with open(dummy_excel_file_name, 'wb') as fp:
         fp.write(file_string)
-    
     # TODO (eventually integrate with add_or_update_model and maybe make
     # this a helper function -> _get_model_config)
-    import openpyxl
 
-    wb = load_workbook((dummy_excel_file_name), data_only=True)  # Assuming dummy_excel_file_name is the equivalent xls file
+    def find_input_output():
+        for ws in wb:
+            input_datalists[ws.title.encode('utf-8')] = []
+            output_datalists[ws.title.encode('utf-8')] = []
 
-    # Create new worksheet
-    config_sheet= wb.create_sheet("cloud-koala-config")
-    # Create column headers
-    headers= ['type','sheet','cell']
-    for row in config_sheet.iter_rows(min_row=1, max_col=3, max_row=1):
-        for i,cell in enumerate(row):
-            cell.value= headers[i]
+            for col in ws.iter_cols():
+                for cell in col:
+                    if cell.value is None:
+                        continue
+                    elif type(cell.value) == unicode:
+                        continue
+                    elif (type(cell.value) == float) or (type(cell.value) == long):
+                        input_datalists[ws.title.encode('utf-8')].append(str(cell.column) + str(cell.row))
+                    elif (type(cell.value) == str) and ((cell.value).startswith('=')):
+                        output_datalists[ws.title.encode('utf-8')].append(str(cell.column) + str(cell.row))
 
-    # TODO get openpyxl to read the inputs and outputs for the remaining sheets
+            # If sheet is empty, delete it from dictionary
+            if input_datalists[ws.title.encode('utf-8')] == []:
+                del input_datalists[ws.title.encode('utf-8')]
+            if output_datalists[ws.title.encode('utf-8')] == []:
+                del output_datalists[ws.title.encode('utf-8')]
+        return input_datalists
+        return output_datalists
 
-    # Saving the excel_file with the config sheet attached (need to change name to suit binary format)
-    wb.save('new.xlsx')
+    def write_sheet_input():
+        label_array_in = input_datalists.keys()
+        for j, elements in enumerate(label_array_in):
+            for i, coords in enumerate(input_datalists[elements]):
+                rows.append(('input', input_datalists.keys()[j], input_datalists[elements][i]))
+        return rows
+
+    def write_sheet_output():
+        label_array_out = output_datalists.keys()
+        for j, elements in enumerate(label_array_out):
+            for i, coords in enumerate(output_datalists[elements]):
+                rows.append(('output', output_datalists.keys()[j], output_datalists[elements][i]))
+        return rows
+
+    filename = dummy_excel_file_name
+    wb = load_workbook((filename), data_only=False)
+    input_datalists = {}
+    output_datalists = {}
+    find_input_output()
+    rows = [('type', 'sheet', 'cell')]
+    write_sheet_input()
+    write_sheet_output()
+    config_sheet = wb.create_sheet("cloud-koala-config")
+
+    for row in rows:
+        config_sheet.append(row)
+
+    wb.save(dummy_excel_file_name)
+    with open(dummy_excel_file_name, 'rb') as fp:
+        new_file_string = fp.read()
 
     os.remove(dummy_excel_file_name)
     if not os.listdir('/tmp'):
         os.rmdir('/tmp')
-    return file_string
+    return new_file_string
 
 
 def list_models():
