@@ -6,7 +6,7 @@ try:
 except ImportError:
     pass
 
-from lib import model
+from lib import model, config
 
 
 def build_response(body, status, content_type='application/json', filename=None):
@@ -148,6 +148,6 @@ def model_config(event, context):
     Returns: Excel file with the new config sheet
     """
     file_name, file_string = _get_file_from_event(event)
-    output_file_string = base64.b64encode(model.get_model_config(file_string))
+    output_file_string = base64.b64encode(config.get_model_config(file_string))
     return success({'file_string': output_file_string})
 
