@@ -47,6 +47,13 @@ functions:
           path: models
           method: get
           cors: true
+  model_config:
+    handler: lib/handler.model_config
+    events:
+      - http:
+          path: config
+          method: post
+          cors: true
   add_model:
     handler: lib/handler.add_model
     events:

@@ -16,6 +16,8 @@ Cloud Koala packages [Koala](https://github.com/anthill/koala) (from [WeAreAnts]
     * `PUT` - update model
     * `POST` - upload model input data, responds with results from the model
     * `DELETE` - remove model
+* `https://.../config`
+    * `POST` - Add an auto-generated config sheet to a given Excel workbook
 
 ## Requirements
 
@@ -89,6 +91,11 @@ sls invoke --stage=dev --function=add_model --path=lib/test/mock_events/add_mode
 Check that the model has been added and compiled:
 ```bash
 sls invoke --stage=dev --function=get_models --path=lib/test/mock_events/get_models.3.json
+```
+
+Generate model configuration data:
+```bash
+sls invoke --stage=dev --function=model_config --path=lib/test/mock_events/model_config.7.json
 ```
 
 Add model with invalid model:

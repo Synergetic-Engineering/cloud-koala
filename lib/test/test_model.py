@@ -9,6 +9,8 @@ boto3.setup_default_session(aws_access_key_id='123', aws_secret_access_key='123'
 
 import lib.model
 
+from openpyxl import load_workbook
+import uuid
 
 dynamodb = boto3.resource('dynamodb')
 table = dynamodb.Table(os.environ['DYNAMODB_TABLE'])
@@ -27,7 +29,7 @@ def _get_table_model_parameter(model_id, parameter):
             return each[parameter]
 
 def _get_file_string():
-    with open('lib/test/test.xlsx', 'r') as f:
+    with open('lib/test/test.xlsx', 'rb') as f:
         return f.read()
 
 
@@ -99,9 +101,47 @@ def test_run_model():
     assert result == {'Sheet1!B11': 10.0,'Sheet1!B12': 5.5}
 
 
-
 @util.setup_mock_resources
 def test_compile_model():
     lib.model.compile_model('456def')
     # check in s3 compiled models bucket
     assert 'compiled_models/456def' in _get_bucket_model_ids()
+
+
+@util.setup_mock_resources
+def test_get_model_config():
+    file_string = _get_file_string()
+    new_file_string = lib.model.get_model_config(file_string)
+
+    if not os.path.exists('/tmp'): # mainly required for dev / test environment
+        os.mkdir('/tmp')
+    temp_id = uuid.uuid4().hex
+    dummy_excel_file_name = '/tmp/temp_excel_file_{}.xlsx'.format(temp_id)
+    with open(dummy_excel_file_name, 'wb') as fp:
+        fp.write(new_file_string)
+
+    wb = load_workbook((dummy_excel_file_name), data_only=False)
+    config_sheet = wb['cloud-koala-config']
+
+    rows = []
+    for row in config_sheet.iter_rows():
+        for cell in row:
+            rows.append(cell.value.encode('utf-8'))
+
+    expecting = ['type', 'sheet', 'cell',
+                 'input', 'Sheet1', 'B2',
+                 'input', 'Sheet1', 'B3',
+                 'input', 'Sheet1', 'B4',
+                 'input', 'Sheet1', 'B5',
+                 'input', 'Sheet1', 'B6',
+                 'input', 'Sheet1', 'B7',
+                 'input', 'Sheet1', 'B8',
+                 'input', 'Sheet1', 'B9',
+                 'input', 'Sheet1', 'B10',
+                 'input', 'Sheet1', 'B11',
+                 'output', 'Sheet1', 'B12']
+    assert rows == expecting
+
+    os.remove(dummy_excel_file_name)
+    if not os.listdir('/tmp'):
+        os.rmdir('/tmp')
