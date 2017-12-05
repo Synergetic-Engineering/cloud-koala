@@ -93,10 +93,10 @@ def test_compile_model():
 
 
 @util.setup_mock_resources
-def test_model_config():
+def test_create_config_sheet():
     # TODO make more meaningful to functionality of model_config
     with open('lib/test/test.xlsx', 'rb') as f:
-        resp = lib.handler.model_config({
+        resp = lib.handler.create_config_sheet({
             'body': '{"file_name": "abc.xlsx", "file_string": "%s"}' % base64.b64encode(f.read()),
             }, None)
     assert resp['statusCode'] == 200
