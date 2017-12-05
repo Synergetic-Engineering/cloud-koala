@@ -13,11 +13,11 @@ import lib.config
 
 
 @util.setup_mock_resources
-def test_get_model_config():
+def test_create_config_sheet():
     with open('lib/test/test.xlsx', 'rb') as f:
         file_string = f.read()
 
-    new_file_string = lib.config.get_model_config(file_string)
+    new_file_string = lib.config.create_config_sheet(file_string)
 
     if not os.path.exists('/tmp'): # mainly required for dev / test environment
         os.mkdir('/tmp')

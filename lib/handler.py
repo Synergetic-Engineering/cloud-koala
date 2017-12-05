@@ -139,7 +139,7 @@ def compile_model(event, context):
     return responses
 
 
-def model_config(event, context):
+def create_config_sheet(event, context):
     """
     Create a config sheet for a given file
     Trigger event: POST https://.../config
@@ -148,6 +148,6 @@ def model_config(event, context):
     Returns: Excel file with the new config sheet
     """
     file_name, file_string = _get_file_from_event(event)
-    output_file_string = base64.b64encode(config.get_model_config(file_string))
+    output_file_string = base64.b64encode(config.create_config_sheet(file_string))
     return success({'file_string': output_file_string})
 

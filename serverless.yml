@@ -85,8 +85,8 @@ functions:
           method: delete
           cors: true
   # /config
-  model_config:
-    handler: lib/handler.model_config
+  create_config_sheet:
+    handler: lib/handler.create_config_sheet
     events:
       - http:
           path: config

@@ -36,7 +36,7 @@ def _generate_config_rows(cell_type, datalists):
             yield cell_type, elements, coords
 
 
-def get_model_config(file_string):
+def create_config_sheet(file_string):
     # XXX HACK this was required for koala but haven't worked out if it's required for openpyxl yte
     if not os.path.exists('/tmp'): # mainly required for dev / test environment
         os.mkdir('/tmp')
