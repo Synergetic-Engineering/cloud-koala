@@ -19,6 +19,7 @@ table = dynamodb.Table(os.environ['DYNAMODB_TABLE'])
 s3 = boto3.resource('s3')
 bucket = s3.Bucket(os.environ['S3_BUCKET'])
 
+
 def _update_bucket_parameter(model_id, param_name, content):
     table.update_item(
         Key={'model_id': model_id},
@@ -26,6 +27,7 @@ def _update_bucket_parameter(model_id, param_name, content):
         ExpressionAttributeNames={"#name":param_name},
         ExpressionAttributeValues={":value":content}
     )
+
 
 def _move_bucket_object(start_folder, end_folder, model_id):
     status = "200"
