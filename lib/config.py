@@ -15,11 +15,11 @@ def _find_input_output(workbook):
             for cell in col:
                 if cell.value is None:
                     continue
-                elif type(cell.value) == unicode:
+                elif isinstance(cell.value, unicode):
                     continue
-                elif (type(cell.value) == float) or (type(cell.value) == long):
+                elif isinstance(cell.value, (float, long)):
                     input_datalists[sheet.title.encode('utf-8')].append(str(cell.column) + str(cell.row))
-                elif (type(cell.value) == str) and ((cell.value).startswith('=')):
+                elif isinstance(cell.value, str) and cell.value.startswith('='):
                     output_datalists[sheet.title.encode('utf-8')].append(str(cell.column) + str(cell.row))
 
         # If sheet is empty, delete it from dictionary

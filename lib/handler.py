@@ -33,12 +33,15 @@ def success(body, content_type='application/json', filename=None):
 
 
 def _get_file_from_event(event):
-    # TODO double check how we want to expect the xlsx file to be included
     payload = json.loads(event.get('body') or '{}')
     file_name = payload.get('file_name', '')
     file_string = base64.b64decode(payload.get('file_string', ''))
     return file_name, file_string
 
+
+# ===========
+# /models API
+# ===========
 
 def get_models(event, context):
     """
@@ -139,6 +142,10 @@ def compile_model(event, context):
     return responses
 
 
+# ===========
+# /config API
+# ===========
+
 def create_config_sheet(event, context):
     """
     Create a config sheet for a given file
@@ -147,7 +154,6 @@ def create_config_sheet(event, context):
       - body: Excel file (required)
     Returns: Excel file with the new config sheet
     """
-    file_name, file_string = _get_file_from_event(event)
+    _, file_string = _get_file_from_event(event)
     output_file_string = base64.b64encode(config.create_config_sheet(file_string))
     return success({'file_string': output_file_string})
-

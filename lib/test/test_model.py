@@ -9,24 +9,26 @@ boto3.setup_default_session(aws_access_key_id='123', aws_secret_access_key='123'
 
 import lib.model
 
-from openpyxl import load_workbook
-import uuid
 
 dynamodb = boto3.resource('dynamodb')
 table = dynamodb.Table(os.environ['DYNAMODB_TABLE'])
 s3 = boto3.resource('s3')
 bucket = s3.Bucket(os.environ['S3_BUCKET'])
 
+
 def _get_table_model_ids():
     return [each['model_id'] for each in table.scan()['Items']]
 
+
 def _get_bucket_model_ids():
     return [each.key for each in bucket.objects.all()]
+
 
 def _get_table_model_parameter(model_id, parameter):
     for each in table.scan()['Items']:
         if each['model_id'] == model_id:
             return each[parameter]
+
 
 def _get_file_string():
     with open('lib/test/test.xlsx', 'rb') as f:
@@ -82,8 +84,8 @@ def test_delete_model():
 @util.setup_mock_resources
 def test_run_model():
     # Multiple inputs and outputs
-    result = lib.model.run_model('123abc', {'Sheet1!B2': 2, 'Sheet1!B3': 3}, ['Sheet1!B11','Sheet1!B12'])
-    assert result == {'Sheet1!B11': 10.0,'Sheet1!B12': 5.7}
+    result = lib.model.run_model('123abc', {'Sheet1!B2': 2, 'Sheet1!B3': 3}, ['Sheet1!B11', 'Sheet1!B12'])
+    assert result == {'Sheet1!B11': 10.0, 'Sheet1!B12': 5.7}
     # No inputs or outputs
     result = lib.model.run_model('123abc', {}, [])
     assert result == {}
@@ -97,8 +99,8 @@ def test_run_model():
     result = lib.model.run_model('123abc', {'Sheet1!B2': 2, 'Sheet1!B4': 3, 'Sheet1!B6': 7}, [])
     assert result == {}
     # Multiple outputs and no inputs
-    result = lib.model.run_model('123abc', {}, ['Sheet1!B11','Sheet1!B12'])
-    assert result == {'Sheet1!B11': 10.0,'Sheet1!B12': 5.5}
+    result = lib.model.run_model('123abc', {}, ['Sheet1!B11', 'Sheet1!B12'])
+    assert result == {'Sheet1!B11': 10.0, 'Sheet1!B12': 5.5}
 
 
 @util.setup_mock_resources
