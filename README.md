@@ -62,7 +62,7 @@ pip install -r requirements.txt
 It can also be useful to install the test requirements when developing
 
 ```bash
-pip install -r lib/test/test_requirements.txt
+pip install -r lib/tests/test_requirements.txt
 ```
 
 ## Testing locally
@@ -85,54 +85,54 @@ Mock events for `sls invoke` are in `test/mock_events`
 
 To test a deployment, first add a model:
 ```bash
-sls invoke --stage=dev --function=add_model --path=lib/test/mock_events/add_model.1.json
+sls invoke --stage=dev --function=add_model --path=lib/tests/mock_events/add_model.1.json
 ```
 
 Check that the model has been added and compiled:
 ```bash
-sls invoke --stage=dev --function=get_models --path=lib/test/mock_events/get_models.3.json
+sls invoke --stage=dev --function=get_models --path=lib/tests/mock_events/get_models.3.json
 ```
 
 Add model with invalid model:
 ```bash
-sls invoke --stage=dev --function=add_model --path=lib/test/mock_events/add_model.1a.json
+sls invoke --stage=dev --function=add_model --path=lib/tests/mock_events/add_model.1a.json
 ```
 
 Check that the model has been added and not compiled:
 ```bash
-sls invoke --stage=dev --function=get_models --path=lib/test/mock_events/get_models.3.json
+sls invoke --stage=dev --function=get_models --path=lib/tests/mock_events/get_models.3.json
 ```
 
 Next, update a model with a known `model_id`:
 ```bash
-sls invoke --stage=dev --function=update_model --path=lib/test/mock_events/update_model.2.json
+sls invoke --stage=dev --function=update_model --path=lib/tests/mock_events/update_model.2.json
 ```
 
 Get all models and check that both models have been created:
 ```bash
-sls invoke --stage=dev --function=get_models --path=lib/test/mock_events/get_models.3.json
+sls invoke --stage=dev --function=get_models --path=lib/tests/mock_events/get_models.3.json
 ```
 
 Get specific model with known `model_id`:
 ```bash
-sls invoke --stage=dev --function=get_model --path=lib/test/mock_events/get_model.4.json
+sls invoke --stage=dev --function=get_model --path=lib/tests/mock_events/get_model.4.json
 ```
 
 Run model with known `model_id`:
 ```bash
-sls invoke --stage=dev --function=run_model --path=lib/test/mock_events/run_model.5.json
+sls invoke --stage=dev --function=run_model --path=lib/tests/mock_events/run_model.5.json
 ```
 
 Finally, delete model with known `model_id`:
 ```bash
-sls invoke --stage=dev --function=delete_model --path=lib/test/mock_events/delete_model.6.json
+sls invoke --stage=dev --function=delete_model --path=lib/tests/mock_events/delete_model.6.json
 ```
 
 (The models created using `add_model` will not be deleted in this process)
 
 Generate model configuration data:
 ```bash
-sls invoke --stage=dev --function=create_config_sheet --path=lib/test/mock_events/create_config_sheet.7.json
+sls invoke --stage=dev --function=create_config_sheet --path=lib/tests/mock_events/create_config_sheet.7.json
 ```
 
 

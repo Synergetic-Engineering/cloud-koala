@@ -4,7 +4,7 @@ from openpyxl import load_workbook
 
 # XXX this needs to happen before importing other stuff to set
 # env variables
-from lib.test import util
+from lib.tests import util
 
 import boto3
 boto3.setup_default_session(aws_access_key_id='123', aws_secret_access_key='123', region_name='ap-southeast-2')
@@ -14,7 +14,7 @@ import lib.config
 
 @util.setup_mock_resources
 def test_create_config_sheet():
-    with open('lib/test/test.xlsx', 'rb') as f:
+    with open('lib/tests/test.xlsx', 'rb') as f:
         file_string = f.read()
 
     new_file_string = lib.config.create_config_sheet(file_string)

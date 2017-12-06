@@ -2,7 +2,7 @@ import base64
 
 # XXX this needs to happen before importing other stuff to set
 # env variables
-from lib.test import util
+from lib.tests import util
 
 import boto3
 boto3.setup_default_session(aws_access_key_id='123', aws_secret_access_key='123', region_name='ap-southeast-2')
@@ -39,7 +39,7 @@ def test_get_models():
 
 @util.setup_mock_resources
 def test_add_model():
-    with open('lib/test/test.xlsx') as f:
+    with open('lib/tests/test.xlsx') as f:
         resp = lib.handler.add_model({
             'body': '{"file_name": "abc.xlsx", "file_string": "%s"}' % base64.b64encode(f.read()),
             }, None)
@@ -56,7 +56,7 @@ def test_get_model():
 
 @util.setup_mock_resources
 def test_update_model():
-    with open('lib/test/test.xlsx') as f:
+    with open('lib/tests/test.xlsx') as f:
         resp = lib.handler.update_model({
             'pathParameters': {'model_id': '123abc'},
             'body': '{"file_name": "abc.xlsx", "file_string": "%s"}' % base64.b64encode(f.read()),
@@ -95,7 +95,7 @@ def test_compile_model():
 @util.setup_mock_resources
 def test_create_config_sheet():
     # TODO make more meaningful to functionality of model_config
-    with open('lib/test/test.xlsx', 'rb') as f:
+    with open('lib/tests/test.xlsx', 'rb') as f:
         resp = lib.handler.create_config_sheet({
             'body': '{"file_name": "abc.xlsx", "file_string": "%s"}' % base64.b64encode(f.read()),
             }, None)
