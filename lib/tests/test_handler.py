@@ -23,11 +23,12 @@ def test_success():
 
 
 def test_get_file_from_event():
-    file_name, file_string = lib.handler._get_file_from_event({
-        'body': '{"file_name": "abc.xlsx", "file_string": "%s"}' % base64.b64encode('blinky-bill'),
+    file_name, file_string, config_sheet_name = lib.handler._get_file_from_event({
+        'body': '{"file_name": "abc.xlsx", "file_string": "%s", "config_sheet_name": "configsheet"}' % base64.b64encode('blinky-bill'),
     })
     assert file_name == 'abc.xlsx'
     assert file_string == 'blinky-bill'
+    assert config_sheet_name == 'configsheet'
 
 
 @util.setup_mock_resources
