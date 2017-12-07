@@ -36,7 +36,7 @@ def _generate_config_rows(cell_type, datalists):
             yield cell_type, elements, coords
 
 
-def create_config_sheet(file_string):
+def create_config_sheet(file_string, config_sheet_name='cloud-koala-config'):
     # XXX HACK this was required for koala but haven't worked out if it's required for openpyxl yte
     if not os.path.exists('/tmp'): # mainly required for dev / test environment
         os.mkdir('/tmp')
@@ -50,7 +50,7 @@ def create_config_sheet(file_string):
     rows = [('type', 'sheet', 'cell')]
     rows.extend(_generate_config_rows('input', input_datalists))
     rows.extend(_generate_config_rows('output', output_datalists))
-    config_sheet = workbook.create_sheet("cloud-koala-config")
+    config_sheet = workbook.create_sheet(config_sheet_name)
     for row in rows:
         config_sheet.append(row)
     workbook.save(dummy_excel_file_name)
@@ -63,3 +63,7 @@ def create_config_sheet(file_string):
         os.rmdir('/tmp')
 
     return new_file_string
+
+
+def get_config_info(file_string, config_sheet_name):
+    return {}
