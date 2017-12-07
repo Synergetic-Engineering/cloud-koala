@@ -66,4 +66,30 @@ def create_config_sheet(file_string, config_sheet_name='cloud-koala-config'):
 
 
 def get_config_info(file_string, config_sheet_name):
-    return {}
+    # write the file_string to a /tmp file (using code from start of create_config_sheet)
+
+    # load with openpyxl and read the `config_sheet_name` sheet
+
+    config_info = []
+    # interrogate the `config_sheet_name` sheet to get the header and rows
+    # Structure it as list of dictionaries, e.g.
+    # [
+    #    {
+    #        'header1': 'abc',
+    #        'header2': '123',
+    #        'header2': 'xxx',
+    #    },
+    #    {
+    #        'header1': 'ijk',
+    #        'header2': '456',
+    #        'header2': 'yyy',
+    #    },
+    #    {
+    #        'header1': 'tuv',
+    #        'header2': '789',
+    #        'header2': 'zzz',
+    #    },
+    # ]
+
+    # delete /tmp files (like end of create_config_sheet again)
+    return config_info
