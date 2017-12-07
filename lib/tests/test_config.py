@@ -42,3 +42,12 @@ def test_create_config_sheet():
     os.remove(dummy_excel_file_name)
     if not os.listdir('/tmp'):
         os.rmdir('/tmp')
+
+
+def test_get_config_info():
+    with open('lib/tests/test.xlsx', 'rb') as f:
+        file_string = f.read()
+
+    config_info = lib.config.get_config_info(file_string, 'config_sheet_test')
+
+    assert config_info == {}
