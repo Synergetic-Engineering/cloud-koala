@@ -36,7 +36,8 @@ def _get_file_from_event(event):
     payload = json.loads(event.get('body') or '{}')
     file_name = payload.get('file_name', '')
     file_string = base64.b64decode(payload.get('file_string', ''))
-    return file_name, file_string
+    config_sheet_name = payload.get('config_sheet_name')
+    return file_name, file_string, config_sheet_name
 
 
 # ===========
@@ -61,8 +62,8 @@ def add_model(event, context):
       - body: Excel file (required)
     Returns: ID of the created model
     """
-    file_name, file_string = _get_file_from_event(event)
-    return success(model.add_or_update_model(file_name, file_string))
+    file_name, file_string, config_sheet_name = _get_file_from_event(event)
+    return success(model.add_or_update_model(file_name, file_string, config_sheet_name=config_sheet_name))
 
 
 def get_model(event, context):
@@ -88,8 +89,10 @@ def update_model(event, context):
     Returns: ID of the updated model
     """
     model_id = event['pathParameters']['model_id']
-    file_name, file_string = _get_file_from_event(event)
-    return success(model.add_or_update_model(file_name, file_string, model_id=model_id))
+    file_name, file_string, config_sheet_name = _get_file_from_event(event)
+    res = model.add_or_update_model(
+        file_name, file_string, model_id=model_id, config_sheet_name=config_sheet_name)
+    return success(res)
 
 
 def delete_model(event, context):
@@ -154,6 +157,7 @@ def create_config_sheet(event, context):
       - body: Excel file (required)
     Returns: Excel file with the new config sheet
     """
-    _, file_string = _get_file_from_event(event)
-    output_file_string = base64.b64encode(config.create_config_sheet(file_string))
+    _, file_string, config_sheet_name = _get_file_from_event(event)
+    output_file_string = base64.b64encode(
+        config.create_config_sheet(file_string, config_sheet_name=config_sheet_name))
     return success({'file_string': output_file_string})

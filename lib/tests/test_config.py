@@ -42,3 +42,19 @@ def test_create_config_sheet():
     os.remove(dummy_excel_file_name)
     if not os.listdir('/tmp'):
         os.rmdir('/tmp')
+
+
+def test_get_config_info():
+    with open('lib/tests/test_with_existing_config_sheet.xlsx', 'rb') as f:
+        file_string = f.read()
+
+    config_info = lib.config.get_config_info(file_string, 'config_sheet_test')
+
+    expected_headers = ['type', 'variable_name', 'sheet', 'table', 'cell', 'units', 'default_value', 'description']
+    expected_rows = [
+        ('input', 'i1', 'Sheet1', 'test table', 'B2', 'm', 1, 'first value'),
+        ('input', 'i2', 'Sheet1', 'test table', 'B3', 'm', 2, 'second value'),
+        ('output', 'avg', 'Sheet1', 'test table', 'B12', 'm', 5.5, 'average'),
+    ]
+
+    assert config_info == [dict(zip(expected_headers, row)) for row in expected_rows]
