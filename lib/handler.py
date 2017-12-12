@@ -63,7 +63,11 @@ def add_model(event, context):
     Returns: ID of the created model
     """
     file_name, file_string, config_sheet_name = _get_file_from_event(event)
-    return success(model.add_or_update_model(file_name, file_string, config_sheet_name=config_sheet_name))
+    return success(model.add_or_update_model(
+        file_name,
+        file_string,
+        config_sheet_name=config_sheet_name,
+        ))
 
 
 def get_model(event, context):

@@ -11,8 +11,9 @@ def _find_input_output(workbook):
     input_datalists = {}
     output_datalists = {}
     for sheet in workbook:
-        input_datalists[sheet.title.encode('utf-8')] = []
-        output_datalists[sheet.title.encode('utf-8')] = []
+        sheet_title = sheet.title.encode('utf-8')
+        input_datalists[sheet_title] = []
+        output_datalists[sheet_title] = []
 
         for col in sheet.iter_cols():
             for cell in col:
@@ -21,15 +22,15 @@ def _find_input_output(workbook):
                 elif isinstance(cell.value, unicode):
                     continue
                 elif isinstance(cell.value, (float, long)):
-                    input_datalists[sheet.title.encode('utf-8')].append(str(cell.column) + str(cell.row))
+                    input_datalists[sheet_title].append(str(cell.column) + str(cell.row))
                 elif isinstance(cell.value, str) and cell.value.startswith('='):
-                    output_datalists[sheet.title.encode('utf-8')].append(str(cell.column) + str(cell.row))
+                    output_datalists[sheet_title].append(str(cell.column) + str(cell.row))
 
         # If sheet is empty, delete it from dictionary
-        if input_datalists[sheet.title.encode('utf-8')] == []:
-            del input_datalists[sheet.title.encode('utf-8')]
-        if output_datalists[sheet.title.encode('utf-8')] == []:
-            del output_datalists[sheet.title.encode('utf-8')]
+        if input_datalists[sheet_title] == []:
+            del input_datalists[sheet_title]
+        if output_datalists[sheet_title] == []:
+            del output_datalists[sheet_title]
     return input_datalists, output_datalists
 
 
@@ -44,8 +45,8 @@ def create_config_sheet(file_string, config_sheet_name=None):
     if not os.path.exists('/tmp'): # mainly required for dev / test environment
         os.mkdir('/tmp')
     dummy_excel_file_name = '/tmp/temp_excel_file_{}.xlsx'.format(uuid.uuid4().hex)
-    with open(dummy_excel_file_name, 'wb') as fp:
-        fp.write(file_string)
+    with open(dummy_excel_file_name, 'wb') as f:
+        f.write(file_string)
 
     if config_sheet_name is None:
         config_sheet_name = DEFAULT_CONFIG_SHEET_NAME
@@ -60,10 +61,10 @@ def create_config_sheet(file_string, config_sheet_name=None):
     for row in rows:
         config_sheet.append(row)
     workbook.save(dummy_excel_file_name)
-    with open(dummy_excel_file_name, 'rb') as fp:
-        new_file_string = fp.read()
+    with open(dummy_excel_file_name, 'rb') as f:
+        new_file_string = f.read()
 
-    # XXX cleans up previous workaround
+    # cleans up previous workaround
     os.remove(dummy_excel_file_name)
     if not os.listdir('/tmp'):
         os.rmdir('/tmp')
@@ -76,8 +77,8 @@ def get_config_info(file_string, config_sheet_name=None, has_header_row=True):
     if not os.path.exists('/tmp'): # mainly required for dev / test environment
         os.mkdir('/tmp')
     dummy_excel_file_name = '/tmp/temp_excel_file_{}.xlsx'.format(uuid.uuid4().hex)
-    with open(dummy_excel_file_name, 'wb') as fp:
-        fp.write(file_string)
+    with open(dummy_excel_file_name, 'wb') as f:
+        f.write(file_string)
 
     if config_sheet_name is None:
         config_sheet_name = DEFAULT_CONFIG_SHEET_NAME
@@ -95,11 +96,11 @@ def get_config_info(file_string, config_sheet_name=None, has_header_row=True):
                 headers = [cell.value for cell in row]
                 continue
             else:
-                headers = map(lambda i: 'header{}'.format(i+1), range(len(row)))
+                headers = ['header{}'.format(i+1) for i in range(len(row))]
         config_info.append(dict(zip(headers, [cell.value for cell in row])))
     print 'config_info', config_info
 
-    # XXX cleans up previous workaround
+    # cleans up previous workaround
     os.remove(dummy_excel_file_name)
     if not os.listdir('/tmp'):
         os.rmdir('/tmp')

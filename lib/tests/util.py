@@ -7,6 +7,13 @@ from moto import mock_dynamodb2, mock_s3
 os.environ['DYNAMODB_TABLE'] = 'moto-test-table'
 os.environ['S3_BUCKET'] = 'moto-test-bucket'
 
+# set dummy boto session (overrides aws-cli credentials)
+boto3.setup_default_session(
+    aws_access_key_id='123',
+    aws_secret_access_key='123',
+    region_name='ap-southeast-2',
+    )
+
 
 def setup_mock_resources(func):
     def _func(*args, **kwargs):
@@ -82,3 +89,8 @@ def create_s3_bucket():
             Key='compiled_models/123abc',
             Body=f.read(),
         )
+
+
+def get_file_string(file_name='lib/tests/test.xlsx'):
+    with open(file_name, 'rb') as f:
+        return f.read()

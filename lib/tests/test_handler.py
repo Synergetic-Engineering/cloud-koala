@@ -1,12 +1,7 @@
 import base64
 
-# XXX this needs to happen before importing other stuff to set
-# env variables
+# lib.util needs to be imported before lib.handler to set env variables
 from lib.tests import util
-
-import boto3
-boto3.setup_default_session(aws_access_key_id='123', aws_secret_access_key='123', region_name='ap-southeast-2')
-
 import lib.handler
 
 
@@ -24,7 +19,13 @@ def test_success():
 
 def test_get_file_from_event():
     file_name, file_string, config_sheet_name = lib.handler._get_file_from_event({
-        'body': '{"file_name": "abc.xlsx", "file_string": "%s", "config_sheet_name": "configsheet"}' % base64.b64encode('blinky-bill'),
+        'body': '''
+            {
+                "file_name": "abc.xlsx",
+                "file_string": "Ymxpbmt5LWJpbGw=",
+                "config_sheet_name": "configsheet"
+            }
+            ''',
     })
     assert file_name == 'abc.xlsx'
     assert file_string == 'blinky-bill'
@@ -95,7 +96,6 @@ def test_compile_model():
 
 @util.setup_mock_resources
 def test_create_config_sheet():
-    # TODO make more meaningful to functionality of model_config
     with open('lib/tests/test.xlsx', 'rb') as f:
         resp = lib.handler.create_config_sheet({
             'body': '{"file_name": "abc.xlsx", "file_string": "%s"}' % base64.b64encode(f.read()),

@@ -5,11 +5,8 @@ import uuid
 import boto3
 import botocore
 
-from openpyxl import load_workbook
-
 from koala.ExcelCompiler import ExcelCompiler
 from koala.Spreadsheet import Spreadsheet
-from koala.ExcelError import ExcelError
 
 from lib import config
 
@@ -84,7 +81,10 @@ def add_or_update_model(file_name, file_string, model_id=None, config_sheet_name
     item_record['version'] = str(int(item_record['version'])+1)
     item_record['compilation_status'] = 'Waiting'
     item_record['updated_at'] = str(int(time.time()))
-    item_record['config_info'] = config.get_config_info(file_string, config_sheet_name=config_sheet_name)
+    item_record['config_info'] = config.get_config_info(
+        file_string,
+        config_sheet_name=config_sheet_name
+        )
     table.put_item(Item=item_record)
     bucket.put_object(Key='excel_uploads/{}'.format(item_record['model_id']), Body=file_string)
     return key['model_id']
@@ -130,12 +130,12 @@ def run_model(model_id, input_dict, output_names):
         return err.response['Error']['Code']
     # XXX HACK Workaround needed for koala spreadsheet loading API
     # - need to write the file to a temp location for koala to read it...
-    # - FIX = koala.Spreadsheet / koala.serialize should be updated to take the file contents in directly
+    # - FIX: update koala.Spreadsheet / koala.serialize to take the file contents in directly
     if not os.path.exists('/tmp'):
         os.mkdir('/tmp')
     dummy_file_name = '/tmp/temp_{}.gzip'.format(model_id)
-    with open(dummy_file_name, 'wb') as fp:
-        fp.write(compliled_string)
+    with open(dummy_file_name, 'wb') as f:
+        f.write(compliled_string)
     sheet = Spreadsheet.load(dummy_file_name)
     for name, value in input_dict.iteritems():
         sheet.set_value(name, value)
@@ -155,13 +155,13 @@ def compile_model(model_id):
     # XXX HACK Workaround needed for koala spreadsheet loading API
     # - need to write the file to a temp location for koala to read it...
     # - then need to write koala compiled file from a temp location...
-    # - FIX = koala.Spreadsheet / koala.serialize should be updated to take the file contents in directly
+    # - FIX: update koala.Spreadsheet / koala.serialize to take the file contents in directly
     return_str = ''
     if not os.path.exists('/tmp'): # mainly required for dev / test environment
         os.mkdir('/tmp')
     dummy_excel_file_name = '/tmp/temp_excel_file_{}.xlsx'.format(model_id)
-    with open(dummy_excel_file_name, 'wb') as fp:
-        fp.write(compliled_string)
+    with open(dummy_excel_file_name, 'wb') as f:
+        f.write(compliled_string)
     try:
         compiler = ExcelCompiler(dummy_excel_file_name)
         sheet = compiler.gen_graph()
@@ -170,7 +170,7 @@ def compile_model(model_id):
         _update_bucket_parameter(model_id, "compilation_status", "Failed (Invalid Excel File)")
         return_str = 'model {} did not compile'.format(model_id)
     except Exception as err:
-        if str(err)=='File is not a zip file':
+        if str(err) == 'File is not a zip file':
             _update_bucket_parameter(model_id, "compilation_status", "Failed (Invalid File Type)")
             print err
         else:
@@ -180,8 +180,8 @@ def compile_model(model_id):
     else:
         dummy_compiled_file_name = '/tmp/temp_compiled_file_{}.gzip'.format(model_id)
         sheet.dump(dummy_compiled_file_name)
-        with open(dummy_compiled_file_name, 'rb') as fp:
-            compiled_file_string = fp.read()
+        with open(dummy_compiled_file_name, 'rb') as f:
+            compiled_file_string = f.read()
         # Write compiled file to S3 and update dynamodb record
         bucket.put_object(Key='compiled_models/{}'.format(model_id), Body=compiled_file_string)
         _update_bucket_parameter(model_id, "compilation_status", "Compiled")

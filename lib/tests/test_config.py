@@ -3,19 +3,19 @@ import os
 from openpyxl import load_workbook
 
 import lib.config
+from lib.tests import util
 
 
 def test_create_config_sheet():
-    with open('lib/tests/test.xlsx', 'rb') as f:
-        file_string = f.read()
+    file_string = util.get_file_string()
 
     new_file_string = lib.config.create_config_sheet(file_string)
 
     if not os.path.exists('/tmp'): # mainly required for dev / test environment
         os.mkdir('/tmp')
     dummy_excel_file_name = '/tmp/temp_excel_file.xlsx'
-    with open(dummy_excel_file_name, 'wb') as fp:
-        fp.write(new_file_string)
+    with open(dummy_excel_file_name, 'wb') as f:
+        f.write(new_file_string)
 
     workbook = load_workbook((dummy_excel_file_name), data_only=False)
     config_sheet = workbook['cloud-koala-config']
@@ -45,12 +45,20 @@ def test_create_config_sheet():
 
 
 def test_get_config_info():
-    with open('lib/tests/test_with_existing_config_sheet.xlsx', 'rb') as f:
-        file_string = f.read()
+    file_string = util.get_file_string(file_name='lib/tests/test_with_existing_config_sheet.xlsx')
 
     config_info = lib.config.get_config_info(file_string, 'config_sheet_test')
 
-    expected_headers = ['type', 'variable_name', 'sheet', 'table', 'cell', 'units', 'default_value', 'description']
+    expected_headers = [
+        'type',
+        'variable_name',
+        'sheet',
+        'table',
+        'cell',
+        'units',
+        'default_value',
+        'description',
+        ]
     expected_rows = [
         ('input', 'i1', 'Sheet1', 'test table', 'B2', 'm', 1, 'first value'),
         ('input', 'i2', 'Sheet1', 'test table', 'B3', 'm', 2, 'second value'),

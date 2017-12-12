@@ -1,13 +1,10 @@
 import os
 
-# XXX this needs to happen before importing other stuff to set
-# env variables
+# lib.util needs to be imported before lib.model and boto3 to set env variables
 from lib.tests import util
+import lib.model
 
 import boto3
-boto3.setup_default_session(aws_access_key_id='123', aws_secret_access_key='123', region_name='ap-southeast-2')
-
-import lib.model
 
 
 dynamodb = boto3.resource('dynamodb')
@@ -20,11 +17,6 @@ def _get_bucket_model_ids():
     return [each.key for each in bucket.objects.all()]
 
 
-def _get_file_string():
-    with open('lib/tests/test.xlsx', 'rb') as f:
-        return f.read()
-
-
 @util.setup_mock_resources
 def test_list_models():
     lib.model.list_models()
@@ -32,7 +24,7 @@ def test_list_models():
 
 @util.setup_mock_resources
 def test_add_model():
-    file_string = _get_file_string()
+    file_string = util.get_file_string()
     model_id = lib.model.add_or_update_model('file_name', file_string)
     # check dynamodb record
     dynamodb_record = table.get_item(Key={'model_id': model_id})['Item']
@@ -46,7 +38,7 @@ def test_add_model():
 
 @util.setup_mock_resources
 def test_update_model():
-    file_string = _get_file_string()
+    file_string = util.get_file_string()
     lib.model.add_or_update_model('file_name', file_string, model_id='123abc')
     # check dynamodb record
     dynamodb_record = table.get_item(Key={'model_id': '123abc'})['Item']
@@ -82,7 +74,10 @@ def test_delete_model():
 @util.setup_mock_resources
 def test_run_model():
     # Multiple inputs and outputs
-    result = lib.model.run_model('123abc', {'Sheet1!B2': 2, 'Sheet1!B3': 3}, ['Sheet1!B11', 'Sheet1!B12'])
+    result = lib.model.run_model(
+        '123abc',
+        {'Sheet1!B2': 2, 'Sheet1!B3': 3}, ['Sheet1!B11', 'Sheet1!B12']
+        )
     assert result == {'Sheet1!B11': 10.0, 'Sheet1!B12': 5.7}
     # No inputs or outputs
     result = lib.model.run_model('123abc', {}, [])

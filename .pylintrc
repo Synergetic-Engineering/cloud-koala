@@ -7,3 +7,4 @@ disable=C0111,W0613
 max-line-length=100
 max-module-lines=1000
 indent-string='    '
+good-names=i,j,k,ex,Run,_,f,s3,dynamodb,table,bucket
