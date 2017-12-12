@@ -109,6 +109,7 @@ package:
         - env/**
         - tests/**
         - test/**
+        - promote-artifacts/**
 
 resources:
   Resources:
