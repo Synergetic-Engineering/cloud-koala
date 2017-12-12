@@ -37,6 +37,25 @@ def test_add_model():
 
 
 @util.setup_mock_resources
+def test_add_model_with_existing_config_sheet():
+    file_string = util.get_file_string(file_name='lib/tests/test_with_existing_config_sheet.xlsx')
+    model_id = lib.model.add_or_update_model(
+        'file_name',
+        file_string,
+        config_sheet_name='config_sheet_test',
+        )
+    # check dynamodb record
+    dynamodb_record = table.get_item(Key={'model_id': model_id})['Item']
+    assert dynamodb_record['file_name'] == 'file_name'
+    assert dynamodb_record['compilation_status'] == 'Waiting'
+    assert isinstance(dynamodb_record['config_info'], list)
+    assert len(dynamodb_record['config_info']) == 3
+    assert dynamodb_record['version'] == '1'
+    # check model is in s3
+    assert 'excel_uploads/{}'.format(model_id) in _get_bucket_model_ids()
+
+
+@util.setup_mock_resources
 def test_update_model():
     file_string = util.get_file_string()
     lib.model.add_or_update_model('file_name', file_string, model_id='123abc')

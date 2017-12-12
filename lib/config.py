@@ -1,3 +1,4 @@
+import decimal
 import os
 import uuid
 
@@ -97,7 +98,13 @@ def get_config_info(file_string, config_sheet_name=None, has_header_row=True):
                 continue
             else:
                 headers = ['header{}'.format(i+1) for i in range(len(row))]
-        config_info.append(dict(zip(headers, [cell.value for cell in row])))
+        dynamodb_type_safe_row = []
+        for cell in row:
+            cell_value = cell.value
+            if isinstance(cell_value, float):
+                cell_value = decimal.Decimal(cell_value)
+            dynamodb_type_safe_row.append(cell_value)
+        config_info.append(dict(zip(headers, dynamodb_type_safe_row)))
     print 'config_info', config_info
 
     # cleans up previous workaround
