@@ -79,10 +79,10 @@ def add_or_update_model(file_name, file_string, model_id=None, config_sheet_name
             'model_id': key['model_id'],
             'created_at': str(int(time.time())),
             'version': str(0),
-            'compilation_status':'Waiting',
         }
     item_record['file_name'] = file_name
     item_record['version'] = str(int(item_record['version'])+1)
+    item_record['compilation_status'] = 'Waiting'
     item_record['updated_at'] = str(int(time.time()))
     item_record['config_info'] = config.get_config_info(file_string, config_sheet_name=config_sheet_name)
     table.put_item(Item=item_record)
