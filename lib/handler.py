@@ -1,10 +1,11 @@
 import base64
-import simplejson as json
 
 try:
     import unzip_requirements
 except ImportError:
     print 'WARNING: unzip_requirements failed to import'
+
+import simplejson as json
 
 from lib import model, config
 
