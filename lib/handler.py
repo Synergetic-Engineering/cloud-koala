@@ -4,7 +4,7 @@ import simplejson as json
 try:
     import unzip_requirements
 except ImportError:
-    pass
+    print 'WARNING: unzip_requirements failed to import'
 
 from lib import model, config
 
