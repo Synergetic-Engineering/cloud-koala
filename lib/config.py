@@ -102,7 +102,9 @@ def get_config_info(file_string, config_sheet_name=None, has_header_row=True):
         for cell in row:
             cell_value = cell.value
             if isinstance(cell_value, float):
-                cell_value = decimal.Decimal(cell_value)
+                # not sure if this is the best way to go about this
+                # see: https://github.com/boto/boto3/issues/665
+                cell_value = decimal.Decimal(str(cell_value))
             dynamodb_type_safe_row.append(cell_value)
         config_info.append(dict(zip(headers, dynamodb_type_safe_row)))
     print 'config_info', config_info
