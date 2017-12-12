@@ -39,7 +39,7 @@ def test_get_models():
 
 @util.setup_mock_resources
 def test_add_model():
-    with open('lib/tests/test.xlsx') as f:
+    with open('lib/tests/test.xlsx', 'rb') as f:
         resp = lib.handler.add_model({
             'body': '{"file_name": "abc.xlsx", "file_string": "%s"}' % base64.b64encode(f.read()),
             }, None)
@@ -56,7 +56,7 @@ def test_get_model():
 
 @util.setup_mock_resources
 def test_update_model():
-    with open('lib/tests/test.xlsx') as f:
+    with open('lib/tests/test.xlsx', 'rb') as f:
         resp = lib.handler.update_model({
             'pathParameters': {'model_id': '123abc'},
             'body': '{"file_name": "abc.xlsx", "file_string": "%s"}' % base64.b64encode(f.read()),
