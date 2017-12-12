@@ -33,7 +33,7 @@ provider:
 
 custom:
   pythonRequirements:
-    dockerizePip: true
+    dockerizePip: false # trying this to get deployment working on seed.run
     zip: true
   table_name: ${self:service}-${self:provider.stage}-models
   bucket_name: ${self:service}-${self:provider.stage}-models
