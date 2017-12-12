@@ -1,3 +1,4 @@
+import decimal
 import os
 
 # lib.util needs to be imported before lib.model and boto3 to set env variables
@@ -71,7 +72,9 @@ def test_update_model():
 
 @util.setup_mock_resources
 def test_get_model():
-    lib.model.get_model('123abc')
+    model_info = lib.model.get_model('123abc')
+    assert model_info['file_name'] == 'file_name.xlsx'
+    assert model_info['model_config'] == {'h1': 'a', 'h2': decimal.Decimal('30.4')}
 
 
 @util.setup_mock_resources

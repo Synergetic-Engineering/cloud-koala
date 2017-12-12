@@ -1,5 +1,5 @@
 import base64
-import json
+import simplejson as json
 
 try:
     import unzip_requirements

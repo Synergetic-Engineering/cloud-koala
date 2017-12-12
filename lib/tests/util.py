@@ -1,3 +1,4 @@
+import decimal
 import os
 
 import boto3
@@ -53,7 +54,8 @@ def create_dynamodb_table():
         'model_id': '123abc',
         'file_name': 'file_name.xlsx',
         'version': '1',
-        'compilation_status':'Compiled'
+        'compilation_status': 'Compiled',
+        'model_config': {'h1': 'a', 'h2': decimal.Decimal('30.4')},
     })
     table.put_item(Item={
         'model_id': '456def',
