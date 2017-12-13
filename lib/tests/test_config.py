@@ -49,20 +49,22 @@ def test_get_config_info():
 
     config_info = lib.config.get_config_info(file_string, 'config_sheet_test')
 
-    expected_headers = [
-        'type',
-        'variable_name',
-        'sheet',
-        'table',
-        'cell',
-        'units',
-        'default_value',
-        'description',
-        ]
-    expected_rows = [
-        ('input', 'i1', 'Sheet1', 'test table', 'B2', 'm', 1, 'first value'),
-        ('input', 'i2', 'Sheet1', 'test table', 'B3', 'm', 2, 'second value'),
-        ('output', 'avg', 'Sheet1', 'test table', 'B12', 'm', 5.5, 'average'),
-    ]
+    expected_config_info = {
+        'headers': [
+            'type',
+            'variable_name',
+            'sheet',
+            'table',
+            'cell',
+            'units',
+            'default_value',
+            'description',
+        ],
+        'rows': [
+            ['input', 'i1', 'Sheet1', 'test table', 'B2', 'm', 1, 'first value'],
+            ['input', 'i2', 'Sheet1', 'test table', 'B3', 'm', 2, 'second value'],
+            ['output', 'avg', 'Sheet1', 'test table', 'B12', 'm', 5.5, 'average'],
+        ],
+    }
 
-    assert config_info == [dict(zip(expected_headers, row)) for row in expected_rows]
+    assert config_info == expected_config_info

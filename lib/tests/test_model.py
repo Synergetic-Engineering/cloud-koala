@@ -49,8 +49,9 @@ def test_add_model_with_existing_config_sheet():
     dynamodb_record = table.get_item(Key={'model_id': model_id})['Item']
     assert dynamodb_record['file_name'] == 'file_name'
     assert dynamodb_record['compilation_status'] == 'Waiting'
-    assert isinstance(dynamodb_record['config_info'], list)
-    assert len(dynamodb_record['config_info']) == 3
+    assert 'headers' in dynamodb_record['config_info']
+    assert 'rows' in dynamodb_record['config_info']
+    assert len(dynamodb_record['config_info']['rows']) == 3
     assert dynamodb_record['version'] == '1'
     # check model is in s3
     assert 'excel_uploads/{}'.format(model_id) in _get_bucket_model_ids()

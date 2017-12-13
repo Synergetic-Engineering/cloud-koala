@@ -85,19 +85,19 @@ def get_config_info(file_string, config_sheet_name=None, has_header_row=True):
         config_sheet_name = DEFAULT_CONFIG_SHEET_NAME
 
     # load with openpyxl and read the `config_sheet_name` sheet
-    workbook = load_workbook((dummy_excel_file_name), data_only=False)
+    workbook = load_workbook((dummy_excel_file_name), data_only=True)
     if config_sheet_name not in workbook:
         return {'err': 'Config sheet `{}` not found'.format(config_sheet_name)}
     config_sheet = workbook[config_sheet_name]
 
-    config_info = []
+    config_info = {'headers': [], 'rows': []}
     for i, row in enumerate(config_sheet.iter_rows()):
         if i == 0:
             if has_header_row:
-                headers = [cell.value for cell in row]
+                config_info['headers'] = [cell.value for cell in row]
                 continue
             else:
-                headers = ['header{}'.format(i+1) for i in range(len(row))]
+                config_info['headers'] = ['header{}'.format(i+1) for i in range(len(row))]
         dynamodb_type_safe_row = []
         for cell in row:
             cell_value = cell.value
@@ -106,7 +106,7 @@ def get_config_info(file_string, config_sheet_name=None, has_header_row=True):
                 # see: https://github.com/boto/boto3/issues/665
                 cell_value = decimal.Decimal(str(cell_value))
             dynamodb_type_safe_row.append(cell_value)
-        config_info.append(dict(zip(headers, dynamodb_type_safe_row)))
+        config_info['rows'].append(dynamodb_type_safe_row)
     print 'config_info', config_info
 
     # cleans up previous workaround
