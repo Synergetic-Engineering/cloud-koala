@@ -117,6 +117,7 @@ def test_run_model():
     # Multiple outputs and no inputs
     result = lib.model.run_model('123abc', {}, ['Sheet1!B11', 'Sheet1!B12'])
     assert result == {'Sheet1!B11': 10.0, 'Sheet1!B12': 5.5}
+    # TODO add use cases that cause ExcelErrors
 
 
 @util.setup_mock_resources

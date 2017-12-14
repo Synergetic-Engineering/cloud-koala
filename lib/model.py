@@ -7,6 +7,7 @@ import botocore
 
 from koala.ExcelCompiler import ExcelCompiler
 from koala.Spreadsheet import Spreadsheet
+from koala.ExcelError import ExcelError
 
 from lib import config
 
@@ -141,7 +142,10 @@ def run_model(model_id, input_dict, output_names):
         sheet.set_value(name, value)
     results = {}
     for name in output_names:
-        results[name] = sheet.evaluate(name)
+        output_value = sheet.evaluate(name)
+        if isinstance(output_value, ExcelError):
+            output_value = str(output_value)
+        results[name] = output_value
     # Cleanup previous workaround
     os.remove(dummy_file_name)
     if not os.listdir('/tmp'):
