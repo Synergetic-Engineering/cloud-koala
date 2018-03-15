@@ -140,7 +140,7 @@ sls invoke --stage=dev --function=create_config_sheet --path=lib/tests/mock_even
 
 This project has been inspired by the nifty python library [Koala](https://github.com/anthill/koala) :koala: ([koala2](https://pypi.python.org/pypi/koala2) on pypi) developed by [WeAreAnts](http://weareants.fr/) :ant: that brought together the useful [Pycel](https://github.com/dgorissen/pycel) and [OpenPyXL](http://openpyxl.readthedocs.io/en/default/) libraries.
 
-Thanks also to the developers of the [Serverless Framework](http://www.serverless.com), [serverless-python-requirements](https://github.com/UnitedIncome/serverless-python-requirements) and [lambci](https://github.com/lambci/lambci).
+Thanks also to the developers of the [Serverless Framework](http://www.serverless.com), [serverless-python-requirements](https://github.com/UnitedIncome/serverless-python-requirements), [SEED](https://seed.run) and [lambci](https://github.com/lambci/lambci).
 
 ## Licence
 
